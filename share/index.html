@@ -77,9 +77,9 @@
     .main-wrap {
       flex: 1;
       width: 100%;
-      max-width: 1300px;
+      max-width: 1280px;
       margin: 0;
-      padding: clamp(32px, 5vw, 64px) clamp(24px, 5vw, 64px);
+      padding: clamp(36px, 5vw, 64px) clamp(24px, 5vw, 72px);
       position: relative;
       z-index: 2;
       text-align: left;
@@ -89,7 +89,7 @@
       position: absolute;
       top: 40px;
       left: 0;
-      width: 600px;
+      width: 620px;
       height: 480px;
       background: var(--accent);
       filter: blur(120px) saturate(1.8);
@@ -142,7 +142,7 @@
     }
 
     .hero-title {
-      font-size: clamp(36px, 6vw, 76px);
+      font-size: clamp(38px, 6vw, 76px);
       font-weight: 800;
       line-height: 1.05;
       letter-spacing: -0.025em;
@@ -295,6 +295,7 @@
     }
 
     audio { display: none; }
+    #yt-hidden-player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
     @media (max-width: 640px) {
       .hero-section {
@@ -320,7 +321,7 @@
 </head>
 <body>
 
-  <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="top-banner">
+  <a href="https://riff.hs.vc" class="top-banner">
     <span>Download Riff — your best music app on your device.</span>
     <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </a>
@@ -346,7 +347,7 @@
     </header>
 
     <div class="controls-row">
-      <button class="btn-play-hero" id="btn-play" title="Play preview" aria-label="Play preview">
+      <button class="btn-play-hero" id="btn-play" title="Play track" aria-label="Play track">
         <svg id="play-icon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
         <svg id="pause-icon" style="display:none;" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
@@ -376,131 +377,242 @@
   </div>
 
   <audio id="audio-player" preload="none"></audio>
+  <div id="yt-hidden-player"></div>
 
   <script>
-    function parseQuery() {
-      const str = window.location.search || window.location.hash;
-      const map = new Map();
-      const raw = str.replace(/^[?#]/, '');
-      const parts = raw.split(/[?&]/);
-      for (const item of parts) {
-        if (!item) continue;
-        const [k, v] = item.split('=');
-        if (k) map.set(decodeURIComponent(k.trim()), v ? decodeURIComponent(v.trim()) : '');
-      }
+    function parseQueryParameters() {
+      const raw = window.location.search || window.location.hash || '';
+      const clean = raw.replace(/^[?#]/, '').replace(/\?/g, '&');
+      const params = new URLSearchParams(clean);
+
+      const cleanText = (val) => {
+        if (!val) return '';
+        try {
+          return decodeURIComponent(val.replace(/\+/g, ' ')).trim();
+        } catch (_) {
+          return val.replace(/\+/g, ' ').trim();
+        }
+      };
+
       return {
-        type: map.get('t') || 'music',
-        title: map.get('n') || map.get('name') || '',
-        artist: map.get('a') || map.get('artist') || '',
-        url: map.get('url') || '',
-        img: map.get('img') || map.get('cover') || '',
-        dur: parseInt(map.get('dur') || '0', 10),
-        id: map.get('id') || ''
+        type: cleanText(params.get('t') || params.get('type') || 'music').toLowerCase(),
+        title: cleanText(params.get('n') || params.get('title') || params.get('name') || ''),
+        artist: cleanText(params.get('a') || params.get('artist') || ''),
+        url: cleanText(params.get('url') || ''),
+        img: cleanText(params.get('img') || params.get('cover') || ''),
+        dur: parseInt(cleanText(params.get('dur') || '0'), 10),
+        id: cleanText(params.get('id') || '')
       };
     }
 
-    const info = parseQuery();
-    const tag = (info.type || 'music').toLowerCase();
+    const itemData = parseQueryParameters();
+    const isArtist = (itemData.type === 'artist');
 
-    const titleEl = document.getElementById('item-title');
-    const authorEl = document.getElementById('item-artist');
-    const timeEl = document.getElementById('item-dur');
-    const dotEl = document.getElementById('bullet-dur');
-    const avaEl = document.getElementById('artist-avatar');
-    const picEl = document.getElementById('item-cover');
-    const picBox = document.getElementById('cover-wrap');
-    const glowEl = document.getElementById('hero-glow');
-    const docTitle = document.getElementById('page-title');
-    const playBtn = document.getElementById('btn-play');
-    const icoPlay = document.getElementById('play-icon');
-    const icoPause = document.getElementById('pause-icon');
-    const player = document.getElementById('audio-player');
-    const shareBtn = document.getElementById('btn-share');
+    const titleElement = document.getElementById('item-title');
+    const artistElement = document.getElementById('item-artist');
+    const durationElement = document.getElementById('item-dur');
+    const durationBullet = document.getElementById('bullet-dur');
+    const artistAvatar = document.getElementById('artist-avatar');
+    const coverImage = document.getElementById('item-cover');
+    const coverWrapper = document.getElementById('cover-wrap');
+    const ambientGlow = document.getElementById('hero-glow');
+    const pageTitle = document.getElementById('page-title');
+    const playButton = document.getElementById('btn-play');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const shareButton = document.getElementById('btn-share');
+    const audioElement = document.getElementById('audio-player');
 
-    const byArtist = (tag === 'artist');
+    let activeYouTubePlayer = null;
+    let isPlaying = false;
 
-    titleEl.textContent = info.title || (byArtist ? info.artist : 'Untitled');
-    docTitle.textContent = `${info.title || info.artist || 'Riff'} | Riff`;
+    titleElement.textContent = itemData.title || (isArtist ? itemData.artist : 'Untitled');
+    pageTitle.textContent = `${itemData.title || itemData.artist || 'Riff'} | Riff`;
 
-    if (byArtist) {
-      picBox.classList.add('is-artist');
-      authorEl.textContent = 'Artist on Riff';
+    if (isArtist) {
+      coverWrapper.classList.add('is-artist');
+      artistElement.textContent = 'Artist on Riff';
     } else {
-      authorEl.textContent = info.artist || '';
-      authorEl.onclick = () => {
-        if (info.artist) window.location.search = `?t=artist&n=${encodeURIComponent(info.artist)}`;
-      };
-      if (info.dur > 0) {
-        const m = Math.floor(info.dur / 60);
-        const s = String(info.dur % 60).padStart(2, '0');
-        timeEl.textContent = `${m}:${s}`;
-        dotEl.style.display = 'inline';
+      artistElement.textContent = itemData.artist || '';
+      if (itemData.dur > 0) {
+        const minutes = Math.floor(itemData.dur / 60);
+        const seconds = String(itemData.dur % 60).padStart(2, '0');
+        durationElement.textContent = `${minutes}:${seconds}`;
+        durationBullet.style.display = 'inline';
       }
     }
 
-    if (info.img) {
-      picEl.src = info.img;
-      if (!byArtist) {
-        avaEl.src = info.img;
-        avaEl.style.display = 'inline-block';
+    function setCoverArtwork(imageUrl) {
+      if (!imageUrl) return;
+      coverImage.src = imageUrl;
+      if (!isArtist) {
+        artistAvatar.src = imageUrl;
+        artistAvatar.style.display = 'inline-block';
       }
-      getColor(info.img, (clr) => {
-        if (clr) {
-          glowEl.style.background = clr;
-          document.documentElement.style.setProperty('--accent', clr);
+      extractDominantColor(imageUrl, (color) => {
+        if (color) {
+          ambientGlow.style.background = color;
+          document.documentElement.style.setProperty('--accent', color);
         }
       });
     }
 
-    function getColor(src, done) {
+    function extractYouTubeVideoId(url) {
+      if (!url) return '';
+      const match = url.match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
+      return match ? match[1] : '';
+    }
+
+    function resolveCoverFallback() {
+      if (itemData.img) {
+        setCoverArtwork(itemData.img);
+        return;
+      }
+      const youtubeId = itemData.id || extractYouTubeVideoId(itemData.url);
+      if (youtubeId && youtubeId.length === 11) {
+        setCoverArtwork(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
+        return;
+      }
+      const searchQuery = `${itemData.artist} ${itemData.title}`.trim();
+      if (searchQuery) {
+        fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&entity=song&limit=1`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.results && data.results[0] && data.results[0].artworkUrl100) {
+              setCoverArtwork(data.results[0].artworkUrl100.replace('100x100', '600x600'));
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    resolveCoverFallback();
+
+    function extractDominantColor(sourceUrl, callback) {
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
         try {
-          const cvs = document.createElement('canvas');
-          cvs.width = 16;
-          cvs.height = 16;
-          const ctx = cvs.getContext('2d');
-          ctx.drawImage(img, 0, 0, 16, 16);
-          const px = ctx.getImageData(0, 0, 16, 16).data;
-          let r = 0, g = 0, b = 0, n = 0;
-          for (let i = 0; i < px.length; i += 4) {
-            r += px[i]; g += px[i+1]; b += px[i+2]; n++;
+          const canvas = document.createElement('canvas');
+          canvas.width = 16;
+          canvas.height = 16;
+          const context = canvas.getContext('2d');
+          context.drawImage(img, 0, 0, 16, 16);
+          const pixels = context.getImageData(0, 0, 16, 16).data;
+          let r = 0, g = 0, b = 0, count = 0;
+          for (let i = 0; i < pixels.length; i += 4) {
+            r += pixels[i]; g += pixels[i+1]; b += pixels[i+2]; count++;
           }
-          done(`rgb(${Math.round(r/n)}, ${Math.round(g/n)}, ${Math.round(b/n)})`);
-        } catch (_) { done(null); }
+          callback(`rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`);
+        } catch (_) { callback(null); }
       };
-      img.onerror = () => done(null);
-      img.src = src;
+      img.onerror = () => callback(null);
+      img.src = sourceUrl;
     }
 
-    let on = false;
-    playBtn.addEventListener('click', () => {
-      if (info.url && /^https?:\/\//i.test(info.url) && /\.(mp3|m4a|ogg|wav)$/i.test(info.url)) {
-        if (!player.src) player.src = info.url;
-        if (on) {
-          player.pause();
-          on = false;
-          icoPlay.style.display = 'block';
-          icoPause.style.display = 'none';
-        } else {
-          player.play();
-          on = true;
-          icoPlay.style.display = 'none';
-          icoPause.style.display = 'block';
-        }
-      } else {
-        window.location.href = `riff://play?title=${encodeURIComponent(info.title)}&artist=${encodeURIComponent(info.artist)}&url=${encodeURIComponent(info.url)}`;
-        setTimeout(() => {
-          window.open('https://github.com/rootscripts/riff', '_blank');
-        }, 700);
-      }
-    });
+    function setPlayButtonVisual(playing) {
+      isPlaying = playing;
+      playIcon.style.display = playing ? 'none' : 'block';
+      pauseIcon.style.display = playing ? 'block' : 'none';
+    }
 
-    shareBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link copied to clipboard!');
+    function fadeInNativeAudio() {
+      audioElement.volume = 0;
+      audioElement.play().then(() => {
+        setPlayButtonVisual(true);
+        let volumeLevel = 0;
+        const fadeInterval = setInterval(() => {
+          volumeLevel = Math.min(1, volumeLevel + 0.1);
+          audioElement.volume = volumeLevel;
+          if (volumeLevel >= 1) clearInterval(fadeInterval);
+        }, 30);
+      }).catch(() => {
+        setPlayButtonVisual(false);
       });
+    }
+
+    function loadYouTubePlayer(videoId) {
+      if (window.YT && window.YT.Player) {
+        initYouTubePlayer(videoId);
+        return;
+      }
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      window.onYouTubeIframeAPIReady = () => initYouTubePlayer(videoId);
+      document.head.appendChild(tag);
+    }
+
+    function initYouTubePlayer(videoId) {
+      activeYouTubePlayer = new YT.Player('yt-hidden-player', {
+        height: '1',
+        width: '1',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1
+        },
+        events: {
+          onReady: (event) => {
+            event.target.playVideo();
+            setPlayButtonVisual(true);
+          },
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.PLAYING) setPlayButtonVisual(true);
+            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) setPlayButtonVisual(false);
+          }
+        }
+      });
+    }
+
+    function togglePlayback() {
+      if (isPlaying) {
+        if (activeYouTubePlayer && activeYouTubePlayer.pauseVideo) {
+          activeYouTubePlayer.pauseVideo();
+        } else {
+          audioElement.pause();
+        }
+        setPlayButtonVisual(false);
+        return;
+      }
+
+      if (itemData.url && !itemData.url.includes('youtube.com') && !itemData.url.includes('youtu.be')) {
+        if (!audioElement.src || audioElement.src !== itemData.url) {
+          audioElement.src = itemData.url;
+        }
+        fadeInNativeAudio();
+        return;
+      }
+
+      const youtubeId = itemData.id || extractYouTubeVideoId(itemData.url);
+      if (youtubeId && youtubeId.length === 11) {
+        if (activeYouTubePlayer && activeYouTubePlayer.playVideo) {
+          activeYouTubePlayer.playVideo();
+          setPlayButtonVisual(true);
+        } else {
+          loadYouTubePlayer(youtubeId);
+        }
+        return;
+      }
+
+      if (itemData.url) {
+        audioElement.src = itemData.url;
+        fadeInNativeAudio();
+      }
+    }
+
+    playButton.addEventListener('click', togglePlayback);
+
+    audioElement.addEventListener('ended', () => setPlayButtonVisual(false));
+    audioElement.addEventListener('pause', () => setPlayButtonVisual(false));
+    audioElement.addEventListener('playing', () => setPlayButtonVisual(true));
+
+    shareButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard');
+      }).catch(() => {});
     });
   </script>
 </body>
