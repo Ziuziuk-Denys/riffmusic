@@ -46,17 +46,17 @@
 
     .top-banner {
       width: 100%;
-      height: 44px;
+      height: 48px;
       background: #000000;
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      font-size: 13.5px;
+      gap: 12px;
+      font-size: 14px;
       font-weight: 500;
       text-decoration: none;
-      padding: 0 16px;
+      padding: 0 20px;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -69,8 +69,8 @@
     }
 
     .top-banner svg {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2.2;
@@ -78,15 +78,15 @@
 
     .hero-glow {
       position: absolute;
-      top: 60px;
+      top: 80px;
       left: 50%;
       transform: translateX(-50%);
-      width: min(600px, 90vw);
-      height: 380px;
+      width: min(700px, 92vw);
+      height: 480px;
       background: var(--accent);
-      filter: blur(120px) saturate(1.8);
-      opacity: 0.25;
-      pointer-events: none;
+      filter: blur(140px) saturate(2);
+      opacity: 0.28;
+      pointer-events: none !important;
       z-index: 0;
       border-radius: 50%;
       transition: background 0.6s ease;
@@ -95,122 +95,163 @@
     .main-wrap {
       flex: 1;
       width: 100%;
-      max-width: 680px;
+      max-width: 760px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 40px 24px 64px 24px;
+      padding: 48px 28px 72px 28px;
       position: relative;
       z-index: 2;
     }
 
-    .cover-wrap {
-      width: 240px;
-      height: 240px;
-      border-radius: 24px;
-      overflow: hidden;
-      background: var(--surface-high);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-      margin-bottom: 24px;
+    .m3-cover-stage {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin-bottom: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
+      pointer-events: none;
     }
 
-    .cover-wrap.is-artist {
-      border-radius: 50% !important;
-    }
-
-    .cover-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .m3-canvas {
+      width: 300px;
+      height: 300px;
       display: block;
     }
 
     .track-title {
-      font-size: clamp(26px, 5vw, 42px);
+      font-size: clamp(32px, 5.5vw, 52px);
       font-weight: 800;
       line-height: 1.15;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       color: #ffffff;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       word-break: break-word;
+      max-width: 100%;
     }
 
     .track-artist {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--on-surface-variant);
-      margin-bottom: 24px;
+      margin-bottom: 32px;
+      max-width: 100%;
     }
 
-    .scrubber-container {
+    .scrubber-row {
       width: 100%;
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .time-text {
-      font-size: 12px;
-      font-weight: 500;
+    .time-label {
+      font-size: 13.5px;
+      font-weight: 600;
       color: var(--outline);
       font-variant-numeric: tabular-nums;
-      width: 36px;
+      width: 44px;
+      user-select: none;
     }
 
-    .seek-slider {
+    .sl {
+      --v: 0;
+      position: relative;
+      width: 100%;
+      height: 32px;
+      display: flex;
+      align-items: center;
       flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--surface-highest);
-      outline: none;
-      cursor: pointer;
     }
 
-    .seek-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
+    .sl-active,
+    .sl-inactive {
+      position: absolute;
+      height: 10px;
+      pointer-events: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .sl-active {
+      left: 0;
+      width: max(0px, calc((100% - 6px) * var(--v) + 3px - 8px));
       background: var(--primary);
-      cursor: pointer;
-      transition: transform 0.1s ease;
+      border-radius: 8px 3px 3px 8px;
     }
 
-    .seek-slider:hover::-webkit-slider-thumb {
-      transform: scale(1.25);
+    .sl-inactive {
+      right: 0;
+      width: max(0px, calc(100% - ((100% - 6px) * var(--v) + 3px) - 8px));
+      background: color-mix(in srgb, var(--on-surface) 18%, transparent);
+      border-radius: 3px 8px 8px 3px;
+    }
+
+    .sl input[type="range"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 32px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .sl input[type="range"]::-webkit-slider-runnable-track {
+      height: 32px;
+      background: transparent;
+    }
+
+    .sl input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 8px;
+      height: 30px;
+      border-radius: 4px;
+      background: var(--primary);
+      border: none;
+      box-shadow: none;
+      transform: none;
+      transition: width 0.15s ease;
+      cursor: pointer;
+    }
+
+    .sl input[type="range"]:active::-webkit-slider-thumb {
+      width: 5px;
     }
 
     .controls-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      margin-bottom: 32px;
+      gap: 24px;
+      margin-bottom: 40px;
       width: 100%;
     }
 
     .btn-play {
-      width: 64px;
-      height: 64px;
+      position: relative;
+      z-index: 10;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       background: var(--primary);
       color: var(--on-primary);
       border: none;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+      touch-action: manipulation;
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
@@ -219,30 +260,32 @@
       filter: brightness(1.08);
     }
 
-    .btn-play svg {
-      width: 26px;
-      height: 26px;
-      fill: currentColor;
+    .btn-play:active {
+      transform: scale(0.95);
     }
 
-    .volume-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .btn-play svg {
+      width: 30px;
+      height: 30px;
+      fill: currentColor;
+      pointer-events: none;
     }
 
     .btn-icon {
-      width: 40px;
-      height: 40px;
+      position: relative;
+      z-index: 10;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: var(--surface);
       color: var(--on-surface-variant);
       border: none;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
+      touch-action: manipulation;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
     }
 
     .btn-icon:hover {
@@ -250,68 +293,61 @@
       color: var(--on-surface);
     }
 
+    .btn-icon:active {
+      transform: scale(0.94);
+    }
+
     .btn-icon svg {
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
+      pointer-events: none;
     }
 
-    .volume-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 80px;
-      height: 4px;
-      border-radius: 999px;
-      background: var(--surface-highest);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--primary);
-      cursor: pointer;
+    .volume-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 160px;
     }
 
     .action-card {
       width: 100%;
       background: var(--surface);
-      border-radius: 20px;
-      padding: 18px 24px;
+      border-radius: 24px;
+      padding: 22px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 20px;
       text-align: left;
     }
 
     .action-text {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: var(--on-surface-variant);
+      line-height: 1.4;
     }
 
     .btn-cta {
-      height: 40px;
-      padding: 0 20px;
+      height: 44px;
+      padding: 0 24px;
       border-radius: 999px;
       background: var(--primary-container);
       color: var(--on-primary-container);
-      font-size: 13.5px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       flex-shrink: 0;
-      transition: filter 0.15s ease;
+      transition: filter 0.15s ease, transform 0.15s ease;
     }
 
     .btn-cta:hover {
-      filter: brightness(1.1);
+      filter: brightness(1.12);
+      transform: translateY(-1px);
     }
 
     .hidden-player {
@@ -320,6 +356,23 @@
       height: 1px;
       opacity: 0.001;
       pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .controls-row {
+        gap: 16px;
+      }
+      .volume-group {
+        width: 120px;
+      }
+      .action-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-cta {
+        width: 100%;
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -333,21 +386,21 @@
   <div class="hero-glow" id="heroGlow"></div>
 
   <main class="main-wrap">
-    <div class="cover-wrap" id="coverWrap">
-      <img id="coverImg" class="cover-img" src="" alt="" style="display: none;">
-      <svg id="coverPlaceholder" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--outline);">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-      </svg>
+    <div class="m3-cover-stage">
+      <canvas id="m3CoverCanvas" class="m3-canvas"></canvas>
     </div>
 
     <h1 class="track-title" id="trackTitle">Loading...</h1>
     <div class="track-artist" id="trackArtist"></div>
 
-    <div class="scrubber-container">
-      <span class="time-text" id="currentTime">0:00</span>
-      <input type="range" class="seek-slider" id="seekSlider" min="0" max="100" value="0">
-      <span class="time-text" id="totalDuration">0:00</span>
+    <div class="scrubber-row">
+      <span class="time-label" id="currentTime">0:00</span>
+      <div class="sl" id="seekSlWrap">
+        <div class="sl-active" id="seekSlActive"></div>
+        <div class="sl-inactive" id="seekSlInactive"></div>
+        <input type="range" class="pill-range" id="seekSlider" min="0" max="100" value="0">
+      </div>
+      <span class="time-label" id="totalDuration">0:00</span>
     </div>
 
     <div class="controls-row">
@@ -358,11 +411,15 @@
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
           </svg>
         </button>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.9">
+        <div class="sl" id="volSlWrap" style="height: 24px;">
+          <div class="sl-active" id="volSlActive"></div>
+          <div class="sl-inactive" id="volSlInactive"></div>
+          <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.9">
+        </div>
       </div>
 
       <button class="btn-play" id="btnPlay" title="Play">
-        <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        <svg id="playIcon" viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></svg>
         <svg id="pauseIcon" style="display:none;" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
 
@@ -374,10 +431,10 @@
     </div>
 
     <div class="action-card">
-      <div class="action-text">Enjoy high quality audio, full synchronized lyrics, and offline downloads on Riff.</div>
+      <div class="action-text">Enjoy studio audio effects, full synchronized lyrics, and offline playback on Riff desktop.</div>
       <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="btn-cta">
-        <span>Get App</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span>Get Riff</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
   </main>
@@ -387,6 +444,316 @@
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
+    (function () {
+      const SAMPLE_COUNT = 360;
+      const PROFILE_RADIUS = 160;
+      const FULL_TURN = Math.PI * 2;
+      const DEGREE = Math.PI / 180;
+      const BISECTION_STEPS = 56;
+
+      const SHAPE_DEFINITIONS = [
+        {
+          name: "Cookie7Sided",
+          kind: "cookie",
+          petals: 7,
+          center: [160, 608.78580952],
+          stretch: 1.00227424,
+          rim: [154.0236, 15.1787],
+          handle: [167.8238, 5.6686],
+          firstFlank: [[153.2414, 15.8961], [152.2361, 16.7034], [150.3202, 18.3516]],
+          secondFlank: [[149.7071, 18.9139], [149.4061, 19.195], [149.1302, 19.4773]],
+          valleyHandle: [145.6613, 23.5231]
+        },
+        {
+          name: "Cookie9Sided",
+          kind: "cookie",
+          petals: 9,
+          center: [1503, 163.34198056],
+          stretch: 1.01036691,
+          rim: [154.3557, 11.7227],
+          handle: [165.6694, 4.4348],
+          firstFlank: [[153.9368, 12.0547], [153.4294, 12.4257], [152.4353, 13.1735]],
+          secondFlank: [[151.9994, 13.5097], [151.7843, 13.6784], [151.5812, 13.8451]],
+          valleyHandle: [147.3456, 17.7843]
+        },
+        {
+          name: "Cookie12Sided",
+          kind: "cookie",
+          petals: 12,
+          center: [1974, 604.001],
+          stretch: 1,
+          rim: [152.8016, 8.376],
+          handle: [163.2344, 3.4256],
+          firstFlank: [[152.6152, 8.4738], [152.3933, 8.5891], [151.9524, 8.8207]],
+          secondFlank: [[151.6913, 8.9609], [151.5576, 9.0305], [151.4338, 9.0971]],
+          valleyHandle: [145.4447, 12.6887]
+        },
+        {
+          name: "Clover4Leaf",
+          kind: "clover",
+          center: [1066.99925, 604.003],
+          outerStart: [38.73, -133.7908],
+          outerHandle: [98.8705, -159.911],
+          innerStart: [129.471, -28.79],
+          innerHandle: [121.4998, -10.42]
+        }
+      ];
+
+      function pointOnCurve(curve, t) {
+        const rest = 1 - t;
+        const a = rest * rest * rest;
+        const b = 3 * rest * rest * t;
+        const c = 3 * rest * t * t;
+        const d = t * t * t;
+        return [
+          a * curve[0][0] + b * curve[1][0] + c * curve[2][0] + d * curve[3][0],
+          a * curve[0][1] + b * curve[1][1] + c * curve[2][1] + d * curve[3][1]
+        ];
+      }
+
+      function straightLine(from, to) {
+        const stepX = (to[0] - from[0]) / 3;
+        const stepY = (to[1] - from[1]) / 3;
+        return [from, [from[0] + stepX, from[1] + stepY], [from[0] + 2 * stepX, from[1] + 2 * stepY], to];
+      }
+
+      function placeOnPolar(center, stretch, radius, angle) {
+        return [center[0] + radius * Math.cos(angle), center[1] + stretch * radius * Math.sin(angle)];
+      }
+
+      function normalizeAngleDifference(difference) {
+        let result = difference % FULL_TURN;
+        if (result > Math.PI) result -= FULL_TURN;
+        if (result <= -Math.PI) result += FULL_TURN;
+        return result;
+      }
+
+      function buildCookieOutline(definition) {
+        const { petals, center, stretch, rim, handle, firstFlank, secondFlank, valleyHandle } = definition;
+        const lobeStep = FULL_TURN / petals;
+        const outline = [];
+
+        for (let lobe = 0; lobe < petals; lobe++) {
+          const baseAngle = -Math.PI / 2 + lobe * lobeStep;
+          const place = (point) => placeOnPolar(center, stretch, point[0], baseAngle + point[1] * DEGREE);
+          const placeMirrored = (point) => placeOnPolar(center, stretch, point[0], baseAngle + lobeStep - point[1] * DEGREE);
+          const placeLeft = (point) => place([point[0], -point[1]]);
+
+          const firstFlankEnd = firstFlank[2];
+          const secondFlankEnd = secondFlank[2];
+
+          outline.push([placeLeft(rim), placeLeft(handle), place(handle), place(rim)]);
+          outline.push([place(rim), place(firstFlank[0]), place(firstFlank[1]), place(firstFlankEnd)]);
+          outline.push([place(firstFlankEnd), place(secondFlank[0]), place(secondFlank[1]), place(secondFlankEnd)]);
+          outline.push([place(secondFlankEnd), place(valleyHandle), placeMirrored(valleyHandle), placeMirrored(secondFlankEnd)]);
+          outline.push([placeMirrored(secondFlankEnd), placeMirrored(secondFlank[1]), placeMirrored(secondFlank[0]), placeMirrored(firstFlankEnd)]);
+          outline.push([placeMirrored(firstFlankEnd), placeMirrored(firstFlank[1]), placeMirrored(firstFlank[0]), placeMirrored(rim)]);
+        }
+
+        return outline;
+      }
+
+      function buildCloverOutline(definition) {
+        const { center, outerStart, outerHandle, innerStart, innerHandle } = definition;
+        const outline = [];
+
+        const turnQuarters = (point, quarters) => {
+          let x = point[0];
+          let y = point[1];
+          for (let step = 0; step < quarters; step++) {
+            const turnedX = -y;
+            y = x;
+            x = turnedX;
+          }
+          return [center[0] + x, center[1] + y];
+        };
+
+        for (let quarter = 0; quarter < 4; quarter++) {
+          const place = (point) => turnQuarters(point, quarter);
+          const outerArc = [
+            place(outerStart),
+            place(outerHandle),
+            place([-outerHandle[1], -outerHandle[0]]),
+            place([-outerStart[1], -outerStart[0]])
+          ];
+          const innerArc = [
+            place(innerStart),
+            place(innerHandle),
+            place([innerHandle[0], -innerHandle[1]]),
+            place([innerStart[0], -innerStart[1]])
+          ];
+          const nextOuterStart = turnQuarters(outerStart, quarter + 1);
+
+          outline.push(outerArc);
+          outline.push(straightLine(outerArc[3], innerArc[0]));
+          outline.push(innerArc);
+          outline.push(straightLine(innerArc[3], nextOuterStart));
+        }
+
+        return outline;
+      }
+
+      function buildOutline(definition) {
+        return definition.kind === "clover" ? buildCloverOutline(definition) : buildCookieOutline(definition);
+      }
+
+      function findCurveBounds(curve) {
+        const bounds = [Infinity, Infinity, -Infinity, -Infinity];
+        const include = (point) => {
+          bounds[0] = Math.min(bounds[0], point[0]);
+          bounds[1] = Math.min(bounds[1], point[1]);
+          bounds[2] = Math.max(bounds[2], point[0]);
+          bounds[3] = Math.max(bounds[3], point[1]);
+        };
+
+        include(curve[0]);
+        include(curve[3]);
+
+        for (let axis = 0; axis < 2; axis++) {
+          const first = curve[1][axis] - curve[0][axis];
+          const second = curve[2][axis] - curve[1][axis];
+          const third = curve[3][axis] - curve[2][axis];
+          const a = first - 2 * second + third;
+          const b = 2 * (second - first);
+          const c = first;
+          const roots = [];
+
+          if (Math.abs(a) < 1e-12) {
+            if (Math.abs(b) > 1e-12) roots.push(-c / b);
+          } else {
+            const discriminant = b * b - 4 * a * c;
+            if (discriminant >= 0) {
+              const root = Math.sqrt(discriminant);
+              roots.push((-b + root) / (2 * a), (-b - root) / (2 * a));
+            }
+          }
+
+          roots.forEach((t) => {
+            if (t > 0 && t < 1) include(pointOnCurve(curve, t));
+          });
+        }
+
+        return bounds;
+      }
+
+      function findBoundsCenter(outline) {
+        const total = [Infinity, Infinity, -Infinity, -Infinity];
+        outline.forEach((curve) => {
+          const bounds = findCurveBounds(curve);
+          total[0] = Math.min(total[0], bounds[0]);
+          total[1] = Math.min(total[1], bounds[1]);
+          total[2] = Math.max(total[2], bounds[2]);
+          total[3] = Math.max(total[3], bounds[3]);
+        });
+        return [(total[0] + total[2]) / 2, (total[1] + total[3]) / 2];
+      }
+
+      function angleFromCenter(point, center) {
+        return Math.atan2(point[1] - center[1], point[0] - center[0]);
+      }
+
+      function createSections(outline, center) {
+        const sections = [];
+        let angle = angleFromCenter(outline[0][0], center);
+
+        outline.forEach((curve) => {
+          const startAngle = angle;
+          const endAngle = startAngle + normalizeAngleDifference(angleFromCenter(curve[3], center) - startAngle);
+          sections.push({ curve, startAngle, endAngle });
+          angle = endAngle;
+        });
+
+        return sections;
+      }
+
+      function reverseOutline(outline) {
+        return outline.slice().reverse().map((curve) => curve.slice().reverse());
+      }
+
+      function createAscendingSections(outline, center) {
+        let sections = createSections(outline, center);
+        const sweep = sections[sections.length - 1].endAngle - sections[0].startAngle;
+        if (sweep < 0) sections = createSections(reverseOutline(outline), center);
+        return sections;
+      }
+
+      function measureRadius(sections, center, angle) {
+        const firstAngle = sections[0].startAngle;
+        const target = firstAngle + ((((angle - firstAngle) % FULL_TURN) + FULL_TURN) % FULL_TURN);
+        let section = sections[sections.length - 1];
+
+        for (let index = 0; index < sections.length; index++) {
+          if (target >= sections[index].startAngle && target <= sections[index].endAngle) {
+            section = sections[index];
+            break;
+          }
+        }
+
+        let low = 0;
+        let high = 1;
+        for (let step = 0; step < BISECTION_STEPS; step++) {
+          const middle = (low + high) / 2;
+          const point = pointOnCurve(section.curve, middle);
+          const pointAngle = section.startAngle + normalizeAngleDifference(angleFromCenter(point, center) - section.startAngle);
+          if (pointAngle < target) low = middle; else high = middle;
+        }
+
+        const point = pointOnCurve(section.curve, (low + high) / 2);
+        return Math.hypot(point[0] - center[0], point[1] - center[1]);
+      }
+
+      function createProfile(definition) {
+        const outline = buildOutline(definition);
+        const center = findBoundsCenter(outline);
+        const sections = createAscendingSections(outline, center);
+        const radii = new Float32Array(SAMPLE_COUNT);
+        let largestRadius = 0;
+
+        for (let index = 0; index < SAMPLE_COUNT; index++) {
+          const angle = -Math.PI + (FULL_TURN * index) / SAMPLE_COUNT;
+          radii[index] = measureRadius(sections, center, angle);
+          if (radii[index] > largestRadius) largestRadius = radii[index];
+        }
+
+        const scale = PROFILE_RADIUS / largestRadius;
+        for (let index = 0; index < SAMPLE_COUNT; index++) radii[index] *= scale;
+        return radii;
+      }
+
+      function easeInOutCubic(progress) {
+        return progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      }
+
+      const shapeProfiles = SHAPE_DEFINITIONS.map(createProfile);
+      const shapeHistory = [0];
+
+      function chooseNextShape(current) {
+        const lastShown = shapeHistory[shapeHistory.length - 1];
+        if (current !== undefined && (shapeHistory.length === 0 || lastShown !== current)) {
+          shapeHistory.push(current);
+        }
+
+        const recentlyShown = shapeHistory.slice(-2);
+        const candidates = shapeProfiles.map((_, index) => index).filter((index) => !recentlyShown.includes(index));
+        const chosen = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : 0;
+
+        shapeHistory.push(chosen);
+        if (shapeHistory.length > 10) shapeHistory.shift();
+        return chosen;
+      }
+
+      window.RiffShapes = {
+        K: SAMPLE_COUNT,
+        HOLD_MS: 2200,
+        MORPH_MS: 1300,
+        ease: easeInOutCubic,
+        ready: () => shapeProfiles.length > 0,
+        profile: (index) => shapeProfiles[index],
+        count: () => shapeProfiles.length,
+        next: chooseNextShape
+      };
+    })();
+
     function parseParameters() {
       const query = window.location.search || window.location.hash || '';
       const params = new Map();
@@ -432,9 +799,6 @@
 
     const titleElement = document.getElementById('trackTitle');
     const artistElement = document.getElementById('trackArtist');
-    const coverWrap = document.getElementById('coverWrap');
-    const coverImage = document.getElementById('coverImg');
-    const coverPlaceholder = document.getElementById('coverPlaceholder');
     const pageTitle = document.getElementById('pageTitle');
     const heroGlow = document.getElementById('heroGlow');
 
@@ -443,9 +807,11 @@
     const playIcon = document.getElementById('playIcon');
     const pauseIcon = document.getElementById('pauseIcon');
     const seekSlider = document.getElementById('seekSlider');
+    const seekSlWrap = document.getElementById('seekSlWrap');
     const currentTimeText = document.getElementById('currentTime');
     const totalDurationText = document.getElementById('totalDuration');
     const volumeSlider = document.getElementById('volumeSlider');
+    const volSlWrap = document.getElementById('volSlWrap');
     const btnMute = document.getElementById('btnMute');
     const btnCopyLink = document.getElementById('btnCopyLink');
 
@@ -458,29 +824,49 @@
       seekSlider.max = payload.duration;
     }
 
-    function applyCoverImage(url) {
-      if (!url) return;
-      coverImage.src = url;
-      coverImage.onload = () => {
-        coverImage.style.display = 'block';
-        coverPlaceholder.style.display = 'none';
-        extractPalette(coverImage, (rgbColor) => {
-          if (rgbColor) {
-            heroGlow.style.background = rgbColor;
-            document.documentElement.style.setProperty('--accent', rgbColor);
-          }
-        });
-      };
+    function updateSliderFill(slider, wrap) {
+      const min = parseFloat(slider.min) || 0;
+      const max = parseFloat(slider.max) || 100;
+      const val = parseFloat(slider.value) || 0;
+      const ratio = max > min ? Math.max(0, Math.min(1, (val - min) / (max - min))) : 0;
+      wrap.style.setProperty('--v', ratio.toFixed(4));
     }
 
-    function resolveCover() {
+    updateSliderFill(seekSlider, seekSlWrap);
+    updateSliderFill(volumeSlider, volSlWrap);
+
+    const canvas = document.getElementById('m3CoverCanvas');
+    const dpr = window.devicePixelRatio || 1;
+    const CANVAS_SIZE = 300;
+    canvas.width = CANVAS_SIZE * dpr;
+    canvas.height = CANVAS_SIZE * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    const coverImage = new Image();
+    coverImage.crossOrigin = 'Anonymous';
+    let imageReady = false;
+
+    coverImage.onload = () => {
+      imageReady = true;
+      extractPalette(coverImage, (rgbColor) => {
+        if (rgbColor) {
+          heroGlow.style.background = rgbColor;
+          document.documentElement.style.setProperty('--accent', rgbColor);
+        }
+      });
+    };
+
+    function resolveCoverSource() {
       if (payload.image) {
-        applyCoverImage(payload.image);
+        coverImage.src = payload.image;
         return;
       }
       const ytIdMatch = (payload.mediaUrl || '').match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
       if (ytIdMatch) {
-        applyCoverImage(`https://i.ytimg.com/vi/${ytIdMatch[1]}/hqdefault.jpg`);
+        coverImage.src = `https://i.ytimg.com/vi/${ytIdMatch[1]}/hqdefault.jpg`;
         return;
       }
       const query = `${payload.artist} ${payload.title}`.trim();
@@ -490,23 +876,23 @@
           .then(data => {
             const hit = data.results && data.results[0];
             if (hit && hit.artworkUrl100) {
-              applyCoverImage(hit.artworkUrl100.replace('100x100', '600x600'));
+              coverImage.src = hit.artworkUrl100.replace('100x100', '600x600');
             }
           })
           .catch(() => {});
       }
     }
 
-    resolveCover();
+    resolveCoverSource();
 
     function extractPalette(img, callback) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 16;
-      canvas.height = 16;
-      const ctx = canvas.getContext('2d');
+      const c = document.createElement('canvas');
+      c.width = 16;
+      c.height = 16;
+      const x = c.getContext('2d');
       try {
-        ctx.drawImage(img, 0, 0, 16, 16);
-        const data = ctx.getImageData(0, 0, 16, 16).data;
+        x.drawImage(img, 0, 0, 16, 16);
+        const data = x.getImageData(0, 0, 16, 16).data;
         let r = 0, g = 0, b = 0, count = 0;
         for (let i = 0; i < data.length; i += 4) {
           r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
@@ -516,6 +902,142 @@
         callback(null);
       }
     }
+
+    const m3State = {
+      from: 0,
+      to: 0,
+      start: 0,
+      rotation: 0,
+      phase: 0,
+      last: 0
+    };
+
+    function getShapeRadii(now) {
+      const S = window.RiffShapes;
+      if (!S || !S.ready()) return null;
+      if (!m3State.start) {
+        m3State.start = now;
+        m3State.from = 0;
+        m3State.to = 0;
+      }
+      if (now - m3State.start >= S.HOLD_MS) {
+        m3State.from = m3State.to;
+        m3State.to = S.next(m3State.from);
+        m3State.start = now;
+      }
+      const t = Math.min(1, (now - m3State.start) / S.MORPH_MS);
+      return { a: S.profile(m3State.from), b: S.profile(m3State.to), e: S.ease(t) };
+    }
+
+    function renderM3Cover(now) {
+      const S = window.RiffShapes;
+      if (!ctx || !S) return;
+
+      if (!m3State.last) m3State.last = now;
+      const delta = Math.min(48, Math.max(0, now - m3State.last));
+      m3State.last = now;
+
+      const rotSpeed = playbackActive ? 0.00045 : 0.00012;
+      m3State.rotation = (m3State.rotation + rotSpeed * delta) % (Math.PI * 2);
+      if (playbackActive) m3State.phase += 0.006 * delta;
+
+      const sh = getShapeRadii(now);
+      if (!sh) return;
+
+      const K = S.K;
+      const cx = CANVAS_SIZE / 2;
+      const cy = CANVAS_SIZE / 2;
+      const coverSize = 210;
+      const scale = (coverSize / 2) / 160;
+      const rot = m3State.rotation;
+
+      function radiusAt(shapeAngle) {
+        const f = ((shapeAngle + Math.PI) / (Math.PI * 2)) * K;
+        const i0 = ((Math.floor(f) % K) + K) % K;
+        const i1 = (i0 + 1) % K;
+        const w = f - Math.floor(f);
+        const r0 = sh.a[i0] + (sh.b[i0] - sh.a[i0]) * sh.e;
+        const r1 = sh.a[i1] + (sh.b[i1] - sh.a[i1]) * sh.e;
+        return (r0 + (r1 - r0) * w) * scale;
+      }
+
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      ctx.save();
+      ctx.beginPath();
+      for (let k = 0; k <= K; k++) {
+        const th = -Math.PI + (Math.PI * 2 * (k % K)) / K;
+        const r = radiusAt(th);
+        const x = cx + Math.cos(th + rot) * r;
+        const y = cy + Math.sin(th + rot) * r;
+        if (k === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.clip();
+
+      if (imageReady) {
+        const iw = coverImage.naturalWidth;
+        const ih = coverImage.naturalHeight;
+        const side = Math.min(iw, ih);
+        const targetSide = Math.ceil(coverSize * 1.08);
+        ctx.drawImage(coverImage, (iw - side) / 2, (ih - side) / 2, side, side, cx - targetSide / 2, cy - targetSide / 2, targetSide, targetSide);
+      } else {
+        ctx.fillStyle = '#2b2930';
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      }
+      ctx.restore();
+
+      const duration = parseFloat(seekSlider.max) || 100;
+      const currentPos = parseFloat(seekSlider.value) || 0;
+      const progress = duration > 0 ? Math.min(1, Math.max(0, currentPos / duration)) : 0;
+      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#d0bcff';
+
+      const STEPS = 200;
+      const ringGap = 10;
+      const ringWidth = 3;
+
+      function ringPoint(phi, wave) {
+        const r = radiusAt(phi - rot) + ringGap + ringWidth / 2 + wave;
+        return [cx + Math.cos(phi) * r, cy + Math.sin(phi) * r];
+      }
+
+      const startPhi = -Math.PI / 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = ringWidth;
+      ctx.strokeStyle = primaryColor;
+
+      ctx.setLineDash([0.1, 7]);
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      const restFrom = Math.round(progress * STEPS);
+      for (let s = restFrom; s <= STEPS; s++) {
+        const [x, y] = ringPoint(startPhi + (Math.PI * 2 * s) / STEPS, 0);
+        if (s === restFrom) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+      if (progress > 0) {
+        ctx.beginPath();
+        const playedSteps = Math.max(2, Math.round(progress * STEPS));
+        for (let s = 0; s <= playedSteps; s++) {
+          const phi = startPhi + (Math.PI * 2 * s) / STEPS;
+          const waveVal = playbackActive ? Math.sin(phi * 22 + m3State.phase) * 1.6 : 0;
+          const [x, y] = ringPoint(phi, waveVal);
+          if (s === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(renderM3Cover);
+    }
+
+    requestAnimationFrame(renderM3Cover);
 
     let playbackActive = false;
     let isSeeking = false;
@@ -598,7 +1120,7 @@
         usingYoutubeBackend = true;
         youtubePlayerInstance.playVideo();
       } else if (possibleVideoId) {
-        setTimeout(startPlayback, 400);
+        setTimeout(startPlayback, 300);
       }
     }
 
@@ -611,7 +1133,10 @@
       setButtonState(false);
     }
 
-    btnPlay.addEventListener('click', togglePlayback);
+    btnPlay.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlayback();
+    });
 
     nativeAudio.addEventListener('timeupdate', () => {
       if (isSeeking || usingYoutubeBackend) return;
@@ -623,6 +1148,7 @@
         seekSlider.max = Math.round(dur);
         totalDurationText.textContent = formatTime(dur);
       }
+      updateSliderFill(seekSlider, seekSlWrap);
     });
 
     nativeAudio.addEventListener('ended', () => setButtonState(false));
@@ -638,12 +1164,14 @@
           seekSlider.max = Math.round(dur);
           totalDurationText.textContent = formatTime(dur);
         }
+        updateSliderFill(seekSlider, seekSlWrap);
       } catch {}
-    }, 400);
+    }, 350);
 
     seekSlider.addEventListener('input', () => {
       isSeeking = true;
       currentTimeText.textContent = formatTime(parseFloat(seekSlider.value));
+      updateSliderFill(seekSlider, seekSlWrap);
     });
 
     seekSlider.addEventListener('change', () => {
@@ -654,6 +1182,7 @@
         nativeAudio.currentTime = targetTime;
       }
       isSeeking = false;
+      updateSliderFill(seekSlider, seekSlWrap);
     });
 
     volumeSlider.addEventListener('input', () => {
@@ -662,10 +1191,12 @@
       if (youtubePlayerInstance && youtubePlayerInstance.setVolume) {
         youtubePlayerInstance.setVolume(Math.round(vol * 100));
       }
+      updateSliderFill(volumeSlider, volSlWrap);
     });
 
     let previousVolume = 0.9;
-    btnMute.addEventListener('click', () => {
+    btnMute.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (volumeSlider.value > 0) {
         previousVolume = volumeSlider.value;
         volumeSlider.value = 0;
@@ -675,7 +1206,8 @@
       volumeSlider.dispatchEvent(new Event('input'));
     });
 
-    btnCopyLink.addEventListener('click', () => {
+    btnCopyLink.addEventListener('click', (e) => {
+      e.stopPropagation();
       navigator.clipboard.writeText(window.location.href).then(() => {
         const origTitle = titleElement.textContent;
         titleElement.textContent = 'Link copied!';
