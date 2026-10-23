@@ -1,761 +1,507 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Riff</title>
-<link id="font-sf-pro" rel="stylesheet" href="https://fonts.cdnfonts.com/css/sf-pro-display">
-<style>
-@property --blue{syntax:"<color>";inherits:true;initial-value:#0071e3}
-:root{transition:--blue .45s ease;
-  --sf:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;
-  --text:#1d1d1f; --muted:#6e6e73; --bg:#fff; --gray:#f5f5f7; --line:#d2d2d7;
-  --blue:#0071e3; --blue-h:color-mix(in srgb,var(--blue) 88%,#fff); --link:color-mix(in srgb,var(--blue) 90%,#000);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{font-family:var(--sf);background:var(--bg);color:var(--text);font-size:17px;line-height:1.47059;letter-spacing:-.022em;-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;letter-spacing:inherit}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Riff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;800&family=Google+Sans+Text:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #121214;
+      --surface: #1e1f22;
+      --surface-high: #28292c;
+      --surface-highest: #333438;
+      --primary: #d0bcff;
+      --on-primary: #381e72;
+      --primary-container: #4f378b;
+      --on-primary-container: #eaddff;
+      --on-surface: #e6e6e8;
+      --on-surface-variant: #cac4d0;
+      --outline: #938f99;
+      --outline-variant: #49454f;
+      --accent: var(--primary);
+    }
 
-.wrap{max-width:1024px;margin:0 auto;padding:0 22px}
-.center{text-align:center}
-h1,h2,h3{font-weight:600}
-.btn{display:inline-block;background:var(--blue);color:#fff;font-weight:400;font-size:17px;line-height:1.17648;padding:12px 22px;border-radius:980px;letter-spacing:-.022em;transition:background .2s}
-.btn:hover{background:var(--blue-h);text-decoration:none}
-.btn.ghost{background:transparent;color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
-.btn.ghost:hover{background:color-mix(in srgb,var(--blue) 8%,transparent)}
-.more{font-size:19px;line-height:1.2;letter-spacing:-.014em}
-.more::after{content:" \203A"}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Google Sans', 'Google Sans Text', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
 
-html,body{height:100%;overflow:hidden}
-#page{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;scrollbar-width:thin}
+    body {
+      background-color: var(--bg);
+      color: var(--on-surface);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:96px 6vw 48px 8vw;overflow:hidden;background:var(--bg)}
-.hero-copy{position:relative;z-index:2;max-width:480px}
-.hero img.icon{width:72px;height:72px;display:block;margin-bottom:20px;opacity:0;transition:opacity .25s}
-img[data-riff-icon].ready{opacity:1!important}
-.hero h1{font-size:clamp(48px,5vw,64px);line-height:1.0625;letter-spacing:-.025em;font-weight:600}
-.hero .sub{font-size:24px;line-height:1.25;font-weight:400;letter-spacing:-.015em;margin-top:10px}
-.hero .actions{display:flex;gap:20px;align-items:center;margin-top:28px;flex-wrap:wrap}
-.hero .note{font-size:14px;line-height:1.43;color:var(--muted);margin-top:18px;letter-spacing:-.016em}
-.hero-stage{position:absolute;right:-10vw;top:50%;transform:translateY(-46%);width:62vw;max-width:1140px;min-width:560px;z-index:1;pointer-events:none;user-select:none}
-.hero-stage img,.bleed img{width:100%;height:auto;display:block;filter:drop-shadow(0 28px 48px rgba(0,0,0,.2))}
-.fade-shot{max-width:900px;margin:48px auto 0;pointer-events:none;user-select:none}
-.fade-shot img{width:100%;height:auto;display:block;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to right,transparent 0,#000 6%,#000 94%,transparent 100%);
-  -webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to bottom,transparent 0,#000 14%,#000 86%,transparent 100%),linear-gradient(to right,transparent 0,#000 6%,#000 94%,transparent 100%);
-  mask-composite:intersect}
+    .top-banner {
+      height: 44px;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background-color 0.2s ease;
+    }
 
-.sec{position:relative;min-height:max(90svh,640px);display:flex;align-items:center;overflow:hidden}
-.sec.gray{background:var(--gray)}
-.sec-copy{position:relative;z-index:2;max-width:460px}
-.sec-copy.left{margin-left:8vw;margin-right:auto}
-.sec-copy.right{margin-right:8vw;margin-left:auto}
-.sec h2{font-size:clamp(32px,3.6vw,44px);line-height:1.1;letter-spacing:-.022em;font-weight:600}
-.sec p.lead{font-size:19px;line-height:1.42;font-weight:400;letter-spacing:-.014em;color:var(--muted);margin-top:16px}
-.bleed{position:absolute;top:50%;transform:translateY(-50%);width:64vw;max-width:1180px;min-width:560px;z-index:1;pointer-events:none;user-select:none}
-.bleed.to-right{right:-22vw}
-.bleed.to-left{left:-22vw}
+    .top-banner:hover {
+      background: #18181b;
+    }
 
-.tiles-sec{background:var(--gray);padding:100px 0}
-.tiles-sec h2{font-size:clamp(32px,3.6vw,44px);line-height:1.1;letter-spacing:-.022em;margin-bottom:40px;font-weight:600}
-.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
-.tile{background:#fff;border-radius:28px;padding:40px;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end}
-.tile h3{font-size:24px;line-height:1.17;letter-spacing:-.014em;margin-bottom:10px;font-weight:600}
-.tile p{font-size:17px;line-height:1.47;color:var(--muted);font-weight:400}
-.t-a{grid-column:span 4}.t-b{grid-column:span 2}.t-c,.t-d,.t-e{grid-column:span 2}
-.tile.big h3{font-size:34px;line-height:1.12;letter-spacing:-.02em}
+    .top-banner svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+    }
 
-.dl{padding:100px 0;background:#fff}
-.dl h2{font-size:clamp(32px,3.6vw,44px);line-height:1.1;letter-spacing:-.022em;font-weight:600}
-.dl .lead{font-size:19px;line-height:1.42;color:var(--muted);margin-top:12px;letter-spacing:-.014em;font-weight:400}
-.os-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:-24px;text-align:left}
-.os{background:var(--gray);border-radius:28px;padding:36px 32px;display:flex;flex-direction:column}
-.os h3{font-size:24px;line-height:1.17;letter-spacing:-.014em;font-weight:600}
-.os .req{font-size:14px;color:var(--muted);margin-top:4px;letter-spacing:-.016em}
-.os p{margin:20px 0 28px;flex:1;font-size:17px;color:var(--text)}
-.os .btn{text-align:center;width:100%}
-.os .alt{display:block;text-align:center;margin-top:14px;font-size:17px}
-.code{margin:20px auto 0;max-width:980px;background:var(--gray);border-radius:18px;padding:24px 28px;text-align:left;position:relative;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:14px;line-height:1.7;letter-spacing:0;color:var(--text)}
-.code small{display:block;font-family:var(--sf);font-size:14px;color:var(--muted);margin-bottom:6px;letter-spacing:-.016em}
-.code .copy{position:absolute;top:18px;right:24px;font-family:var(--sf);font-size:14px;color:var(--link)}
-.code .copy:hover{text-decoration:underline}
+    .main-wrap {
+      flex: 1;
+      width: 100%;
+      max-width: 1300px;
+      margin: 0;
+      padding: clamp(32px, 5vw, 64px) clamp(24px, 5vw, 64px);
+      position: relative;
+      z-index: 2;
+      text-align: left;
+    }
 
-.faq{background:var(--gray);padding:100px 0}
-.faq h2{font-size:clamp(32px,3.6vw,44px);line-height:1.1;letter-spacing:-.022em;text-align:center;margin-bottom:40px;font-weight:600}
-.faq-list{max-width:760px;margin:0 auto;border-top:1px solid var(--line)}
-.q{border-bottom:1px solid var(--line)}
-.q button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:24px;text-align:left;padding:22px 0;font-size:19px;line-height:1.3;font-weight:500;letter-spacing:-.014em}
-.q .pm{position:relative;width:14px;height:14px;flex:none}
-.q .pm::before,.q .pm::after{content:"";position:absolute;background:var(--text);left:0;top:6px;width:14px;height:2px;border-radius:1px;transition:transform .3s}
-.q .pm::after{transform:rotate(90deg)}
-.q.open .pm::after{transform:rotate(0)}
-.a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
-.q.open .a{grid-template-rows:1fr}
-.a div{overflow:hidden}
-.a p{padding:0 40px 24px 0;color:var(--muted);font-size:17px}
+    .hero-glow {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      width: 600px;
+      height: 480px;
+      background: var(--accent);
+      filter: blur(120px) saturate(1.8);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      transition: background 0.6s ease;
+    }
 
-footer{background:var(--gray);border-top:1px solid var(--line);padding:20px 0 28px;font-size:12px;line-height:1.33337;color:var(--muted);letter-spacing:-.01em}
-footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer a{color:var(--muted);margin-right:20px}
-footer a:last-child{margin-right:0}
-footer a:hover{color:var(--text);text-decoration:underline}
-.faq+footer{border-top:1px solid var(--line)}
+    .hero-section {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: clamp(24px, 4vw, 36px);
+      margin-bottom: 36px;
+      text-align: left;
+    }
 
-body{font-size:19px}
-.hero h1,.sec h2,.tiles-sec h2,.dl h2,.faq h2,.tile h3,.os h3,.q button{font-weight:500}
-.hero{min-height:100svh}
-.hero h1{font-size:clamp(88px,11vw,160px);line-height:1}
-.hero .sub{font-size:32px}
-.hero img.icon{width:96px;height:96px}
-.hero-copy{max-width:620px}
-.hero .note{font-size:16px}
-.sec h2,.tiles-sec h2,.dl h2,.faq h2{font-size:clamp(38px,4.4vw,58px)}
-.sec p.lead,.dl .lead{font-size:22px}
-.sec-copy{max-width:540px}
-.wrap{max-width:1180px}
-.btn{font-size:19px;padding:14px 26px}
-.btn.lg{display:inline-flex;align-items:center;gap:10px;font-size:19px;padding:14px 26px}
-.btn svg{width:22px;height:22px;fill:currentColor;flex:none}
-.more{font-size:21px}
-.tile h3{font-size:28px}.tile.big h3{font-size:40px}.tile p{font-size:19px}
-.tile{min-height:0;justify-content:flex-start;padding:32px}
-.os-ico{width:44px;height:44px;margin-bottom:18px;color:var(--text)}
-.os-ico svg{width:100%;height:100%;fill:currentColor;display:block}
-.os h3{font-size:28px}.os p{font-size:19px}
-.q button{font-size:22px}.a p{font-size:19px}
-footer{font-size:13px}
-.vis{height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:28px}
-.brands{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:12px;width:100%}
-.bc{background:var(--gray);border-radius:20px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-size:17px;font-weight:500}
-.bc svg{width:56px;height:56px}
-.brands.sm .bc{height:96px;border-radius:18px}.brands.sm svg{width:40px;height:40px}
-.fmt{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;height:100%}
-.fmt span{background:var(--gray);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500}
-.pl{width:100%;display:grid;gap:12px}
-.pl i{display:block;background:var(--gray);border-radius:980px;padding:12px 18px;font-style:normal;font-size:16px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rp{width:100%;height:100%;background:var(--gray);border-radius:20px;display:flex;align-items:center;gap:16px;padding:0 20px}
-.cv{width:64px;height:64px;border-radius:14px;background:#fff;padding:10px;flex:none;opacity:0;transition:opacity .25s}
-.rp small{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
-.rp b{display:block;height:10px;width:130px;border-radius:5px;background:#1d1d1f}.rp s{display:block;height:8px;width:90px;border-radius:4px;background:#c7c7cc;margin-top:8px}
-.rp em{display:block;height:4px;border-radius:2px;background:#d2d2d7;margin-top:14px;width:160px}.rp u{display:block;width:40%;height:100%;border-radius:2px;background:var(--blue)}
-.num{font-size:96px;line-height:1;font-weight:500;letter-spacing:-.04em}.num small{font-size:32px;letter-spacing:-.02em;color:var(--muted)}
-@media(max-width:900px){
-  .hero{display:block;padding:100px 20px 0;min-height:0}
-  .hero-copy{max-width:none;text-align:center;margin:0 auto}
-  .hero img.icon{margin-left:auto;margin-right:auto}
-  .hero .actions{justify-content:center}
-  .hero-stage{position:relative;right:auto;top:auto;transform:none;width:130%;max-width:none;min-width:0;margin:40px 0 0 -15%}
-  .sec{display:block;min-height:0;padding:72px 24px 0;text-align:center}
-  .sec-copy,.sec-copy.left,.sec-copy.right{margin:0 auto;max-width:560px}
-  .bleed,.bleed.to-right,.bleed.to-left{position:relative;left:auto;right:auto;top:auto;transform:none;width:130%;min-width:0;margin:40px 0 0 -15%}
-  .t-a,.t-b,.t-c,.t-d,.t-e{grid-column:span 6}
-  .tile{min-height:0;padding:32px}
-  .os-grid{grid-template-columns:1fr}
-}
-@media(max-width:560px){
-  .tiles-sec,.dl,.faq{padding-top:64px;padding-bottom:64px}
-  .hero .sub{font-size:21px}
-  .tile.big h3{font-size:28px}
-  .q button{font-size:17px}
-}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+    .hero-cover-wrap {
+      width: clamp(180px, 22vw, 240px);
+      height: clamp(180px, 22vw, 240px);
+      border-radius: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--surface-high);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
 
-.nav-wrapper{position:fixed;top:max(16px,env(safe-area-inset-top));left:0;right:0;z-index:1000;display:flex;justify-content:center;padding:0 20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));pointer-events:none;box-sizing:border-box}
-.liquid-glass-nav{pointer-events:auto;display:inline-flex;align-items:center;gap:26px;height:52px;padding:5px 8px 5px 16px;border-radius:9999px;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(32px) saturate(190%);backdrop-filter:blur(32px) saturate(190%);border:1px solid rgba(0,0,0,.08);box-shadow:none;white-space:nowrap;flex-wrap:nowrap;max-width:100%;box-sizing:border-box}
-.nav-left{display:flex;align-items:center;gap:10px;color:var(--text);flex-shrink:0}
-.nav-left:hover{text-decoration:none}
-.nav-riff-icon{width:26px;height:26px;object-fit:contain;display:block;opacity:0;transition:opacity .25s;flex-shrink:0}
-.nav-brand-name{font-size:19px;font-weight:700;letter-spacing:-.025em}
-.nav-links{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.nav-link{color:rgba(29,29,31,.85);font-size:14.5px;font-weight:500;padding:7px 15px;border-radius:9999px;letter-spacing:-.01em;transition:background-color .25s cubic-bezier(.25,.1,.25,1)}
-.nav-link:hover{color:#000;background:rgba(0,0,0,.06);text-decoration:none}
-.nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.nav-btn-gh{display:inline-flex;align-items:center;gap:7px;color:var(--text);background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.08);border-radius:9999px;padding:7px 15px;font-size:14px;font-weight:500;letter-spacing:-.01em;box-shadow:inset 0 1px 1px rgba(255,255,255,.8);transition:background-color .25s cubic-bezier(.25,.1,.25,1),transform .2s cubic-bezier(.25,.1,.25,1)}
-.nav-btn-gh:hover{background:rgba(0,0,0,.09);transform:scale(1.02);text-decoration:none}
-.nav-btn-gh:active,.nav-btn-download:active{transform:scale(.97)}
-.nav-btn-gh svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
-.nav-btn-download{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border-radius:9999px;padding:8px 20px;font-size:14px;font-weight:600;letter-spacing:-.01em;box-shadow:none;transition:background-color .25s cubic-bezier(.25,.1,.25,1),transform .2s cubic-bezier(.25,.1,.25,1);flex-shrink:0}
-.nav-btn-download:hover{background:var(--blue-h);transform:scale(1.02);text-decoration:none}
+    .hero-cover-wrap.is-artist {
+      border-radius: 50% !important;
+    }
 
-@media(max-width:900px){
-  .nav-wrapper{top:max(12px,env(safe-area-inset-top));padding:0 14px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
-  .nav-links{display:none}
-  .liquid-glass-nav{width:100%;max-width:460px;justify-content:space-between;gap:10px;height:48px;padding:4px 6px 4px 12px}
-  .nav-brand-name{font-size:18px}
-  .nav-riff-icon{width:24px;height:24px}
-  .nav-actions{gap:8px}
-  .nav-btn-gh{padding:6px 12px;font-size:13px}
-  .nav-btn-download{padding:7px 16px;font-size:13px}
-}
-@media(max-width:480px){
-  .nav-wrapper{padding:0 10px;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
-  .liquid-glass-nav{padding:4px 5px 4px 10px;gap:8px}
-  .nav-brand-name{font-size:17px}
-  .nav-actions{gap:6px}
-  .nav-btn-gh span{display:none}
-  .nav-btn-gh{padding:6px 9px}
-  .nav-btn-download{padding:7px 13px;font-size:13px}
-}
-@media(max-width:340px){
-  .nav-brand-name{font-size:15px}
-  .nav-btn-download{padding:6px 10px;font-size:12px}
-}
+    .hero-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-.dots{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:30px}
-.dot{position:relative;width:34px;height:34px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);transition:transform .25s cubic-bezier(.2,.7,.2,1)}
-.dot:hover{transform:scale(1.14)}
-.dot:active{transform:scale(.94)}
-.dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--c);opacity:0;scale:.8;transition:opacity .25s,scale .25s cubic-bezier(.2,.7,.2,1)}
-.dot.on::after{opacity:1;scale:1}
-.dot.custom{background:conic-gradient(#ff3b30,#ff9500,#ffcc00,#34c759,#00c7be,#0a84ff,#bf5af2,#ff2d92,#ff3b30);cursor:pointer;overflow:visible}
-.dot.custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border-radius:50%}
-.dots-note{font-size:15px;color:var(--muted);margin-top:16px;letter-spacing:-.016em}
-@media(max-width:900px){.dots{justify-content:center}}
+    .hero-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+      text-align: left;
+    }
 
-.counters{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-top:34px}
-.counter{visibility:hidden}
-.counter.sm .odo{font-size:clamp(28px,3.4vw,44px)}
-.counter-label svg{width:14px;height:14px;fill:currentColor;flex:none;margin-right:6px;vertical-align:-1px}
-@media(max-width:900px){.counters{justify-content:center}}
-.counter.show{visibility:visible;animation:rise 1s cubic-bezier(.2,.7,.2,1) .5s both}
-.counter.sm.show{animation-delay:.75s}
-#subsC.show{animation-delay:1s}
-.odo{display:inline-flex;justify-content:center;align-items:center;min-height:1.3em;font-size:clamp(44px,5.4vw,72px);font-weight:600;letter-spacing:-.04em;line-height:1.3;font-variant-numeric:tabular-nums;color:var(--text)}
-.od{display:block;width:.62em;height:1.3em;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%)}
-.od-strip{display:block;will-change:transform}
-.od-strip span{display:block;height:1.3em;line-height:1.3em;text-align:center}
-.od-sep{display:block;width:.3em;height:1.3em;line-height:1.3em;text-align:center;letter-spacing:0}
-.counter-label{font-size:16px;color:var(--muted);margin-top:-4px;letter-spacing:-.016em}
+    .hero-title {
+      font-size: clamp(36px, 6vw, 76px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      word-break: break-word;
+      text-align: left;
+      margin: 0;
+    }
 
-@keyframes tgdrift{0%,100%{translate:0 0;rotate:var(--r)}50%{translate:0 -12px;rotate:calc(var(--r) + 9deg)}}
-@keyframes tgflow{0%{background-position:0% 50%}100%{background-position:100% 50%}}
-.tg-banner{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:18px;max-width:560px;margin-top:30px;padding:20px 20px 20px 22px;border-radius:28px;color:#fff;background:linear-gradient(120deg,#37aee2,#2aabee 30%,#229ed9 62%,#1c93d1 85%,#37aee2);background-size:220% 220%;animation:tgflow 9s ease-in-out infinite alternate,rise 1s cubic-bezier(.2,.7,.2,1) 1.05s both;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-.tg-banner:hover{transform:scale(1.015);text-decoration:none}
-.tg-banner::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 140% at 12% 0%,rgba(255,255,255,.34),transparent 55%),radial-gradient(90% 120% at 100% 100%,rgba(0,70,130,.22),transparent 60%)}
-.tp{position:absolute;z-index:-1;fill:#fff;pointer-events:none;animation:tgdrift var(--dur,8s) ease-in-out var(--dl,0s) infinite}
-.tg-badge{width:54px;height:54px;flex:none;fill:#fff;filter:drop-shadow(0 4px 10px rgba(0,60,120,.25))}
-.tg-text{display:flex;flex-direction:column;min-width:0;flex:1}
-.tg-text b{font-size:22px;line-height:1.2;font-weight:600;letter-spacing:-.02em}
-.tg-text small{font-size:15px;line-height:1.35;opacity:.88;margin-top:3px;letter-spacing:-.012em}
-.tg-go{flex:none;background:#fff;color:#1c93d1;font-size:16px;font-weight:600;padding:11px 20px;border-radius:980px;letter-spacing:-.016em;transition:transform .2s}
-.tg-banner:hover .tg-go{transform:scale(1.05)}
-@media(max-width:560px){.tg-banner{flex-wrap:wrap;justify-content:center;text-align:center;padding:22px 20px}.tg-text{flex-basis:100%;align-items:center}.tg-badge{width:46px;height:46px}}
-@media(max-width:900px){.tg-banner{margin-left:auto;margin-right:auto;text-align:left}}
-@media(max-width:560px){.tg-banner{text-align:center}}
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 14.5px;
+      color: var(--on-surface-variant);
+      margin-top: 4px;
+      text-align: left;
+      justify-content: flex-start;
+    }
 
-.edge{position:fixed;left:0;right:0;z-index:5;pointer-events:none}
-.edge.top{top:0;height:120px;--dir:to bottom}
-.edge.bot{bottom:0;height:110px;--dir:to top}
-.edge i{position:absolute;inset:0;display:block}
-.edge i:nth-child(1){-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px);-webkit-mask-image:linear-gradient(var(--dir),#000 0,transparent 100%);mask-image:linear-gradient(var(--dir),#000 0,transparent 100%)}
-.edge i:nth-child(2){-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);-webkit-mask-image:linear-gradient(var(--dir),#000 0,#000 18%,transparent 68%);mask-image:linear-gradient(var(--dir),#000 0,#000 18%,transparent 68%)}
-.edge i:nth-child(3){-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);-webkit-mask-image:linear-gradient(var(--dir),#000 0,#000 8%,transparent 42%);mask-image:linear-gradient(var(--dir),#000 0,#000 8%,transparent 42%)}
-.edge i:nth-child(4){background:linear-gradient(var(--dir),rgba(255,255,255,.9) 0,rgba(255,255,255,.72) 18%,rgba(255,255,255,.42) 40%,rgba(255,255,255,.16) 65%,rgba(255,255,255,.04) 85%,rgba(255,255,255,0) 100%)}
+    .artist-avatar-mini {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--surface-highest);
+      flex-shrink: 0;
+    }
 
-@keyframes rise{from{opacity:0;filter:blur(16px);translate:0 22px;scale:.94}to{opacity:1;filter:blur(0);translate:0 0;scale:1}}
-@keyframes pop{from{filter:blur(16px);scale:.6}to{filter:blur(0);scale:1}}
-@keyframes stageIn{from{opacity:0;filter:blur(28px);translate:48px 0;scale:.86}to{opacity:1;filter:blur(0);translate:0 0;scale:1}}
-@keyframes navIn{from{opacity:0;translate:0 -100%}to{opacity:1;translate:0 0}}
-.liquid-glass-nav{animation:navIn .9s cubic-bezier(.2,.7,.2,1) both}
-.hero img.icon{animation:pop 1s cubic-bezier(.2,.8,.2,1) .05s both}
-.hero h1{animation:rise 1s cubic-bezier(.2,.7,.2,1) .15s both}
-.hero .sub{animation:rise 1s cubic-bezier(.2,.7,.2,1) .3s both}
-.hero .actions{animation:rise 1s cubic-bezier(.2,.7,.2,1) .45s both}
-.hero .note{animation:rise 1s cubic-bezier(.2,.7,.2,1) .6s both}
-.hero-stage{animation:stageIn 1.5s cubic-bezier(.2,.7,.2,1) .25s both}
-.rv{opacity:0;filter:blur(14px);translate:0 28px;scale:.95;transition:opacity .9s ease,filter .9s ease,translate .9s cubic-bezier(.2,.7,.2,1),scale .9s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
-.rv.in{opacity:1;filter:blur(0);translate:0 0;scale:1}
-.bleed.rv{translate:0 40px;scale:.92}
-.bleed.rv.in{translate:0 0;scale:1}
-@media(prefers-reduced-motion:reduce){*{animation:none!important}.rv{opacity:1;filter:none;translate:none;scale:none}}
-</style>
+    .hero-meta span.artist-link {
+      color: #ffffff;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .hero-meta span.artist-link:hover {
+      text-decoration: underline;
+    }
+
+    .meta-bullet {
+      opacity: 0.6;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+      position: relative;
+      z-index: 2;
+      justify-content: flex-start;
+    }
+
+    .btn-play-hero {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--on-primary);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .btn-play-hero:hover {
+      transform: scale(1.06);
+      filter: brightness(1.08);
+    }
+
+    .btn-play-hero svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      margin-left: 2px;
+    }
+
+    .btn-icon-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--on-surface-variant);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-icon-pill:hover {
+      background: var(--surface-high);
+      color: var(--on-surface);
+    }
+
+    .btn-pill-cta {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: 999px;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-pill-cta:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .app-info-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 24px 28px;
+      max-width: 680px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      text-align: left;
+    }
+
+    .app-info-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-info-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+
+    .app-info-desc {
+      font-size: 13.5px;
+      color: var(--on-surface-variant);
+      line-height: 1.4;
+    }
+
+    audio { display: none; }
+
+    @media (max-width: 640px) {
+      .hero-section {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 20px;
+      }
+      .controls-row {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+      .app-info-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-pill-cta {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="nav-wrapper">
-  <nav class="liquid-glass-nav">
-    <a href="#top" class="nav-left">
-      <img class="nav-riff-icon" data-riff-icon="black" src="https://raw.githubusercontent.com/rootscripts/riff/main/assets/icon.png" alt="Riff">
-      <span class="nav-brand-name">Riff</span>
-    </a>
-    <div class="nav-links">
-      <a href="#themes" class="nav-link">Themes</a>
-      <a href="#editor" class="nav-link">Audio Editor</a>
-      <a href="#features" class="nav-link">Features</a>
-      <a href="#download" class="nav-link">Download</a>
-      <a href="#faq" class="nav-link">FAQ</a>
-    </div>
-    <div class="nav-actions">
-      <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="nav-btn-gh">
-        <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-        <span>Star</span>
+  <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="top-banner">
+    <span>Download Riff — your best music app on your device.</span>
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+
+  <div class="hero-glow" id="hero-glow"></div>
+
+  <div class="main-wrap">
+    
+    <header class="hero-section">
+      <div class="hero-cover-wrap" id="cover-wrap">
+        <img id="item-cover" class="hero-cover" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333438'><rect width='24' height='24'/></svg>" alt="">
+      </div>
+
+      <div class="hero-info">
+        <h1 class="hero-title" id="item-title">Loading...</h1>
+        <div class="hero-meta" id="item-meta">
+          <img id="artist-avatar" class="artist-avatar-mini" src="" alt="" style="display: none;">
+          <span class="artist-link" id="item-artist"></span>
+          <span class="meta-bullet" id="bullet-dur" style="display:none;">•</span>
+          <span id="item-dur"></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="controls-row">
+      <button class="btn-play-hero" id="btn-play" title="Play preview" aria-label="Play preview">
+        <svg id="play-icon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        <svg id="pause-icon" style="display:none;" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+
+      <button class="btn-icon-pill" id="btn-share" title="Share" aria-label="Share">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+      </button>
+
+      <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="btn-pill-cta" id="btn-open-riff">
+        <span>Open in Riff</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
       </a>
-      <a href="#download" class="nav-btn-download"><span>Download</span></a>
     </div>
-  </nav>
-</div>
-<div class="edge top" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-<div class="edge bot" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-<div id="page">
 
-<header class="hero" id="top">
-  <div class="hero-copy">
-    <img class="icon" data-riff-icon="black" src="https://raw.githubusercontent.com/rootscripts/riff/main/assets/icon.png" alt="Riff">
-    <h1>Riff</h1>
-    <p class="sub">The music player for your desktop.</p>
-    <div class="actions">
-      <a class="btn lg" id="dlMain" href="https://github.com/rootscripts/riff/releases/latest"><span id="dlIcon"></span><span id="dlLabel">Download</span></a>
-      <a class="more" href="#download">Other platforms</a>
-      <a class="more" href="https://github.com/rootscripts/riff" target="_blank" rel="noopener">View source</a>
-    </div>
-    <p class="note" id="dlNote">Free and open source. For Windows, Linux and macOS.</p>
-    <div class="counters">
-      <div class="counter" id="counter">
-        <div class="odo" id="odo" role="img"></div>
-        <p class="counter-label">total downloads</p>
+    <div class="app-info-card">
+      <div class="app-info-text">
+        <span class="app-info-title">Listen without limits on Riff</span>
+        <span class="app-info-desc">Enjoy high-resolution audio, custom equalizer presets, real-time synchronized lyrics, and offline playback.</span>
       </div>
-      <div class="counter sm" id="stars">
-        <div class="odo" id="odoStars" role="img"></div>
-        <p class="counter-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>GitHub stars</p>
-      </div>
-      <div class="counter sm" id="subsC">
-        <div class="odo" id="odoSubs" role="img"></div>
-        <p class="counter-label"><svg aria-hidden="true"><use href="#tg"/></svg>Telegram subscribers</p>
-      </div>
+      <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener" class="btn-pill-cta" style="height:38px; padding:0 20px; font-size:13.5px; flex-shrink:0;">
+        Install App
+      </a>
     </div>
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="tg" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></symbol></svg>
-    <a class="tg-banner" href="https://t.me/riffplayer" target="_blank" rel="noopener">
-      <svg class="tp" style="left:6%;top:14%;width:34px;height:34px;--r:-18deg;--dur:7s;--dl:0s;opacity:0.22" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:24%;top:70%;width:22px;height:22px;--r:12deg;--dur:9s;--dl:-2s;opacity:0.18" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:44%;top:10%;width:18px;height:18px;--r:25deg;--dur:8s;--dl:-4s;opacity:0.16" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:58%;top:62%;width:40px;height:40px;--r:-8deg;--dur:10s;--dl:-1s;opacity:0.2" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:72%;top:16%;width:26px;height:26px;--r:20deg;--dur:7.5s;--dl:-3s;opacity:0.22" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:86%;top:56%;width:32px;height:32px;--r:-22deg;--dur:9.5s;--dl:-5s;opacity:0.24" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:93%;top:10%;width:16px;height:16px;--r:10deg;--dur:8.5s;--dl:-2s;opacity:0.16" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:36%;top:82%;width:16px;height:16px;--r:-14deg;--dur:11s;--dl:-6s;opacity:0.14" aria-hidden="true"><use href="#tg"/></svg><svg class="tp" style="left:66%;top:84%;width:18px;height:18px;--r:16deg;--dur:9s;--dl:-7s;opacity:0.16" aria-hidden="true"><use href="#tg"/></svg>
-      <svg class="tg-badge" aria-hidden="true"><use href="#tg"/></svg>
-      <span class="tg-text"><b>Join the Riff channel</b><small>@riffplayer · news, releases and sneak peeks</small></span>
-      <span class="tg-go">Open Telegram</span>
-    </a>
+
   </div>
-  <div class="hero-stage"><img src="Device - Macbook Pro.png" alt="Riff on a laptop"></div>
-</header>
 
-<section class="sec gray" id="themes">
-  <div class="sec-copy left">
-    <h2>Dress it up.</h2>
-    <p class="lead">Start with Dark, Light or other. Or adjust hue, saturation and brightness, set your own wallpaper, or even add custom CSS to completely redesign Riff.</p>
-    <div class="dots" role="group" aria-label="Accent color" id="dots"></div>
-    <p class="dots-note">Pick a color. It changes this whole page.</p>
-  </div>
-  <div class="bleed to-right"><img src="image 23.png" alt="Riff themes"></div>
-</section>
+  <audio id="audio-player" preload="none"></audio>
 
-<section class="sec" id="editor">
-  <div class="bleed to-left"><img src="Frame 2.png" alt="Riff audio editor"></div>
-  <div class="sec-copy right">
-    <h2>Edit tracks right in the player.</h2>
-    <p class="lead">Speed up, slow, reverb and add bass-boost, shape the sound with a 10-band equalizer. Change the tempo without changing the pitch, and add reverb or distortion as you listen.</p>
-  </div>
-</section>
-
-<section class="tiles-sec" id="features">
-  <div class="wrap">
-    <h2 class="center">Why switch to Riff</h2>
-    <div class="tiles">
-      <div class="tile big t-a"><div class="vis"><div class="brands"><div class="bc"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0m0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104m0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772M9.684 15.54V8.46L15.816 12z"/></svg>YouTube Music</div><div class="bc"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814M9.545 15.568V8.432L15.818 12z"/></svg>YouTube</div><div class="bc"><svg viewBox="0 0 24 24" fill="#FF5500"><path d="M23.999 14.165c-.052 1.796-1.612 3.169-3.4 3.169h-8.18a.68.68 0 0 1-.675-.683V7.862a.75.75 0 0 1 .452-.724s.75-.513 2.333-.513a5.36 5.36 0 0 1 2.763.755 5.43 5.43 0 0 1 2.57 3.54c.282-.08.574-.121.868-.12.884 0 1.73.358 2.347.992s.948 1.49.922 2.373M10.721 8.421c.247 2.98.427 5.697 0 8.672a.264.264 0 0 1-.53 0c-.395-2.946-.22-5.718 0-8.672a.264.264 0 0 1 .53 0M9.072 9.448c.285 2.659.37 4.986-.006 7.655a.277.277 0 0 1-.55 0c-.331-2.63-.256-5.02 0-7.655a.277.277 0 0 1 .556 0m-1.663-.257c.27 2.726.39 5.171 0 7.904a.266.266 0 0 1-.532 0c-.38-2.69-.257-5.21 0-7.904a.266.266 0 0 1 .532 0m-1.647.77a26.1 26.1 0 0 1-.008 7.147.272.272 0 0 1-.542 0 28 28 0 0 1 0-7.147.275.275 0 0 1 .55 0m-1.67 1.769c.421 1.865.228 3.5-.029 5.388a.257.257 0 0 1-.514 0c-.21-1.858-.398-3.549 0-5.389a.272.272 0 0 1 .543 0Zm-1.655-.273c.388 1.897.26 3.508-.01 5.412-.026.28-.514.283-.54 0-.244-1.878-.347-3.54-.01-5.412a.283.283 0 0 1 .56 0m-1.668.911c.4 1.268.257 2.292-.026 3.572a.257.257 0 0 1-.514 0c-.241-1.262-.354-2.312-.023-3.572a.283.283 0 0 1 .563 0"/></svg>SoundCloud</div></div></div>
-        <h3>Streaming with no ads or telemetry.</h3><p>Play from YouTube Music, YouTube and SoundCloud with no ads and no Premium account. Tracks are cached, so playback starts right away while others have a turtle speed.</p></div>
-      <div class="tile t-b"><div class="vis"><div class="fmt"><span>FLAC</span><span>MP3</span><span>WAV</span><span>OGG</span></div></div>
-        <h3>Your files, untouched.</h3><p>Riff reads tags and cover art and never moves or changes the originals. Plays local files lossless.</p></div>
-      <div class="tile t-c"><div class="vis"><div class="pl"><div class="brands sm" style="--n:4"><div class="bc"><svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0m5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02m1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6s.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2m.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3"/></svg></div><div class="bc"><svg viewBox="0 0 24 24" fill="#FA243C"><path d="M23.994 6.124a9.2 9.2 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5 5 0 0 0-1.877-.726 10.5 10.5 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986q-.227.014-.455.026c-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408a11 11 0 0 0-.1 1.18c0 .032-.007.062-.01.093v12.223q.014.211.027.424c.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a13 13 0 0 0 1.57-.1c.822-.106 1.596-.35 2.295-.81a5.05 5.05 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14q-.524.15-1.07.173c-.95.045-1.773-.6-1.943-1.536a1.88 1.88 0 0 1 1.038-2.022c.323-.16.67-.25 1.018-.324.378-.082.758-.153 1.134-.24.274-.063.457-.23.51-.516a1 1 0 0 0 .02-.193q0-2.723-.002-5.443a.7.7 0 0 0-.026-.185c-.04-.15-.15-.243-.304-.234-.16.01-.318.035-.475.066q-1.14.226-2.28.456l-2.325.47-1.374.278q-.024.007-.048.013c-.277.077-.377.203-.39.49q-.002.063 0 .13c-.002 2.602 0 5.204-.003 7.805 0 .42-.047.836-.215 1.227-.278.64-.77 1.04-1.434 1.233q-.526.152-1.075.172c-.96.036-1.755-.6-1.92-1.544-.14-.812.23-1.685 1.154-2.075.357-.15.73-.232 1.108-.31.287-.06.575-.116.86-.177q.574-.126.6-.714v-.15q0-4.441.002-8.882c0-.123.013-.25.042-.37.07-.285.273-.448.546-.518.255-.066.515-.112.774-.165q1.1-.224 2.2-.444l2.27-.46q1.005-.202 2.01-.403c.22-.043.442-.088.663-.106.31-.025.523.17.554.482q.012.11.012.223.003 2.866 0 5.732z"/></svg></div><div class="bc"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814M9.545 15.568V8.432L15.818 12z"/></svg></div><div class="bc"><svg viewBox="0 0 24 24" fill="#FF5500"><path d="M23.999 14.165c-.052 1.796-1.612 3.169-3.4 3.169h-8.18a.68.68 0 0 1-.675-.683V7.862a.75.75 0 0 1 .452-.724s.75-.513 2.333-.513a5.36 5.36 0 0 1 2.763.755 5.43 5.43 0 0 1 2.57 3.54c.282-.08.574-.121.868-.12.884 0 1.73.358 2.347.992s.948 1.49.922 2.373M10.721 8.421c.247 2.98.427 5.697 0 8.672a.264.264 0 0 1-.53 0c-.395-2.946-.22-5.718 0-8.672a.264.264 0 0 1 .53 0M9.072 9.448c.285 2.659.37 4.986-.006 7.655a.277.277 0 0 1-.55 0c-.331-2.63-.256-5.02 0-7.655a.277.277 0 0 1 .556 0m-1.663-.257c.27 2.726.39 5.171 0 7.904a.266.266 0 0 1-.532 0c-.38-2.69-.257-5.21 0-7.904a.266.266 0 0 1 .532 0m-1.647.77a26.1 26.1 0 0 1-.008 7.147.272.272 0 0 1-.542 0 28 28 0 0 1 0-7.147.275.275 0 0 1 .55 0m-1.67 1.769c.421 1.865.228 3.5-.029 5.388a.257.257 0 0 1-.514 0c-.21-1.858-.398-3.549 0-5.389a.272.272 0 0 1 .543 0Zm-1.655-.273c.388 1.897.26 3.508-.01 5.412-.026.28-.514.283-.54 0-.244-1.878-.347-3.54-.01-5.412a.283.283 0 0 1 .56 0m-1.668.911c.4 1.268.257 2.292-.026 3.572a.257.257 0 0 1-.514 0c-.241-1.262-.354-2.312-.023-3.572a.283.283 0 0 1 .563 0"/></svg></div></div><i>open.spotify.com/playlist/…</i></div></div>
-        <h3>Switch easy.</h3><p>Paste a public link from Spotify, Apple Music, YouTube or SoundCloud. The tracks land in your new playlists.</p></div>
-      <div class="tile t-d"><div class="vis"><div class="rp"><img class="cv" data-riff-icon="black" src="https://raw.githubusercontent.com/rootscripts/riff/main/assets/icon.png" alt=""><div><small>Listening to Riff</small><b></b><s></s><em><u></u></em></div></div></div>
-        <h3>Discord RPC, easier.</h3><p>Show the track, artist, cover art and progress on your Discord profile. No logins like in Spotify</p></div>
-      <div class="tile t-e"><div class="vis"><div class="num">150<small> MB</small></div></div>
-        <h3>Fast and light on memory.</h3><p>One lightweight process. It opens fast and keeps playing in the background.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="dl center" id="download">
-  <div class="wrap">
-    <h2>Download</h2>
-    <p class="lead">All tools are included on Windows and Linux.</p>
-    <div class="fade-shot"><img src="Device - Macbook Pro(2).png" alt="Riff releases on GitHub"></div>
-    <div class="os-grid">
-      <div class="os">
-        <div class="os-ico" data-ico="win"></div>
-        <h3>Windows</h3>
-        <div class="req">Windows 10 and 11, 64-bit</div>
-        <p>A single installer with everything bundled. Works with your media keys and taskbar controls.</p>
-        <a class="btn" data-asset="win" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Download installer</a>
-        <a class="alt" data-asset="winzip" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Portable .zip</a>
-      </div>
-      <div class="os">
-        <div class="os-ico" data-ico="linux"></div>
-        <h3>Linux</h3>
-        <div class="req" id="linuxReq">AppImage and .deb</div>
-        <p>Runs on Ubuntu, Debian, Arch and Fedora. Riff can add itself to your app launcher.</p>
-        <a class="btn" data-asset="appimage" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Download AppImage</a>
-        <a class="alt" data-asset="deb" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Download .deb</a>
-      </div>
-      <div class="os">
-        <div class="os-ico" data-ico="mac"></div>
-        <h3>macOS</h3>
-        <div class="req">Beta. Apple silicon and Intel</div>
-        <p>Builds for M1 through M4 and for Intel Macs. They aren’t signed yet, so macOS may ask you to run the commands below.</p>
-        <a class="btn" data-asset="dmgarm" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Download for Apple silicon</a>
-        <a class="alt" data-asset="dmgx64" href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Download for Intel</a>
-      </div>
-    </div>
-    <div class="code">
-      <small>If macOS blocks Riff, open Terminal and run:</small>
-      <button class="copy" id="copyMacCmd" type="button">Copy</button>
-      <div>xattr -cr /Applications/Riff.app</div>
-      <div>brew install yt-dlp ffmpeg</div>
-    </div>
-  </div>
-</section>
-
-<section class="faq" id="faq">
-  <div class="wrap">
-    <h2>Questions</h2>
-    <div class="faq-list">
-      <div class="q"><button type="button" aria-expanded="false"><span>Does Riff cost anything?</span><i class="pm"></i></button><div class="a"><div><p>No. Riff is free and open source under the MIT license, with no subscription or paid tier.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Are there ads?</span><i class="pm"></i></button><div class="a"><div><p>No. YouTube Music and SoundCloud play without ads.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Do I need an account?</span><i class="pm"></i></button><div class="a"><div><p>No. Install Riff and press play. It doesn’t ask you to sign in and doesn’t collect usage data.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Can it play my own music files?</span><i class="pm"></i></button><div class="a"><div><p>Yes. Riff plays FLAC, MP3, WAV and OGG, reads tags and album art, and lets you build playlists without touching the files.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Does it work offline?</span><i class="pm"></i></button><div class="a"><div><p>Yes. Downloaded tracks and your local library play without a connection.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>How do I import a Spotify playlist?</span><i class="pm"></i></button><div class="a"><div><p>Paste the link to a public playlist. Riff turns it into a playlist in your library, including long ones with over 100 tracks.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Is there an Android or iOS version?</span><i class="pm"></i></button><div class="a"><div><p>Not an official one. Riff is built for desktop. On Android and iOS the download button takes you to a page with community forks of Riff instead.</p></div></div></div>
-      <div class="q"><button type="button" aria-expanded="false"><span>Are the Android and iOS forks official?</span><i class="pm"></i></button><div class="a"><div><p>No, they are unofficial. There are many forks of Riff that I didn’t make. The page lists only forks I trust and ones people have sent me, so it isn’t a complete list. I can’t vouch for forks that aren’t on it, so install those at your own risk.</p></div></div></div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div>
-      <a href="https://github.com/rootscripts/riff" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/rootscripts/riff/releases" target="_blank" rel="noopener">Releases</a><a href="https://t.me/riffplayer" target="_blank" rel="noopener">Telegram</a><a href="https://ko-fi.com" target="_blank" rel="noopener">Support on Ko-fi</a><a href="https://github.com/rootscripts/riff/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
-    </div>
-    <div>Riff is for personal and educational use.</div>
-  </div>
-</footer>
-
-</div>
-<script>
-const ico={
-  get(src){
-    return new Promise((res,rej)=>{
-      const img=new Image();
-      img.crossOrigin='anonymous';
-      img.onload=()=>res(img);
-      img.onerror=rej;
-      img.src=src;
-    });
-  },
-  async rnd(src,{col='#000',lo=.55,hi=.9,dim=512}={}){
-    const pic=await this.get(src);
-    const k=Math.min(1,dim/Math.max(pic.naturalWidth,pic.naturalHeight));
-    const w=Math.round(pic.naturalWidth*k),h=Math.round(pic.naturalHeight*k);
-    const cvs=document.createElement('canvas');
-    cvs.width=w;
-    cvs.height=h;
-    const ctx=cvs.getContext('2d',{willReadFrequently:true});
-    ctx.drawImage(pic,0,0,w,h);
-    const tmp=document.createElement('canvas').getContext('2d',{willReadFrequently:true});
-    tmp.fillStyle=col;
-    tmp.fillRect(0,0,1,1);
-    const [red,grn,blu]=tmp.getImageData(0,0,1,1).data;
-    const raw=ctx.getImageData(0,0,w,h),d=raw.data;
-    for(let i=0;i<d.length;i+=4){
-      const a=d[i+3]/255,lum=(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2])/255;
-      let t=Math.min(1,Math.max(0,(a*lum-lo)/(hi-lo)));
-      t=t*t*(3-2*t);
-      d[i]=red;d[i+1]=grn;d[i+2]=blu;d[i+3]=Math.round(t*255);
-    }
-    ctx.putImageData(raw,0,0);
-    return cvs.toDataURL('image/png');
-  },
-  async set(pic){
-    try{pic.src=await this.rnd(pic.getAttribute('src'),{col:pic.dataset.riffIcon||'#000'})}
-    catch(err){console.warn('RiffIcon: could not recolor',err)}
-    pic.classList.add('ready');
-  },
-  run(){
-    document.querySelectorAll('img[data-riff-icon]').forEach(el=>this.set(el));
-  }
-};
-ico.run();
-
-const rep='rootscripts/riff',rel='https://github.com/'+rep+'/releases/latest';
-const svg={
-  android:'<svg viewBox="0 0 24 24"><path d="M6 9.5h12V18a1 1 0 0 1-1 1h-1v3a1.5 1.5 0 0 1-3 0v-3h-2v3a1.5 1.5 0 0 1-3 0v-3H7a1 1 0 0 1-1-1zM3.5 9.5a1.5 1.5 0 0 1 3 0V15a1.5 1.5 0 0 1-3 0zm14 0a1.5 1.5 0 0 1 3 0V15a1.5 1.5 0 0 1-3 0zM6.2 8.5a5.8 5.8 0 0 1 11.6 0zM8.6 3.2l-1.4-1.9.6-.4 1.4 1.9zm6.8 0l1.4-1.9-.6-.4-1.4 1.9z"/><circle cx="9.4" cy="6" r=".8" fill="#0071e3"/><circle cx="14.6" cy="6" r=".8" fill="#0071e3"/></svg>',
-  win:'<svg viewBox="0 0 24 24"><path d="M0 0h11.4v11.4H0zM12.6 0H24v11.4H12.6zM0 12.6h11.4V24H0zM12.6 12.6H24V24H12.6z"/></svg>',
-  mac:'<svg viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>',
-  linux:'<svg viewBox="0 0 24 24"><path d="M12.504 0q-.232 0-.48.021c-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.4.4 0 0 0-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071s1.592-.536 2.257-1.306c.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.36.36 0 0 0-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139m.529 3.405h.013c.213 0 .396.062.584.198.19.135.33.332.438.533.105.259.158.459.166.724 0-.02.006-.04.006-.06v.105l-.004-.021-.004-.024a1.8 1.8 0 0 1-.15.706.95.95 0 0 1-.213.335 1 1 0 0 0-.088-.042c-.104-.045-.198-.064-.284-.133a1.3 1.3 0 0 0-.22-.066c.05-.06.146-.133.183-.198q.08-.193.088-.402v-.02a1.2 1.2 0 0 0-.061-.4c-.045-.134-.101-.2-.183-.333-.084-.066-.167-.132-.267-.132h-.016c-.093 0-.176.03-.262.132a.8.8 0 0 0-.205.334 1.2 1.2 0 0 0-.09.4v.019q.002.134.02.267c-.193-.067-.438-.135-.607-.202a2 2 0 0 1-.018-.2v-.02a1.8 1.8 0 0 1 .15-.768 1.08 1.08 0 0 1 .43-.533 1 1 0 0 1 .594-.2zm-2.962.059h.036c.142 0 .27.048.399.135.146.129.264.288.344.465.09.199.14.4.153.667v.004c.007.134.006.2-.002.266v.08c-.03.007-.056.018-.083.024-.152.055-.274.135-.393.2q.018-.136.003-.267v-.015c-.012-.133-.04-.2-.082-.333a.6.6 0 0 0-.166-.267.25.25 0 0 0-.183-.064h-.021c-.071.006-.13.04-.186.132a.55.55 0 0 0-.12.27 1 1 0 0 0-.023.33v.015c.012.135.037.2.08.334.046.134.098.2.166.268q.014.014.034.024c-.07.057-.117.07-.176.136a.3.3 0 0 1-.131.068 2.6 2.6 0 0 1-.275-.402 1.8 1.8 0 0 1-.155-.667 1.8 1.8 0 0 1 .08-.668 1.4 1.4 0 0 1 .283-.535c.128-.133.26-.2.418-.2m1.37 1.706c.332 0 .733.065 1.216.399.293.2.523.269 1.052.468h.003c.255.136.405.266.478.399v-.131a.57.57 0 0 1 .016.47c-.123.31-.516.643-1.063.842v.002c-.268.135-.501.333-.775.465-.276.135-.588.292-1.012.267a1.1 1.1 0 0 1-.448-.067 4 4 0 0 1-.322-.198c-.195-.135-.363-.332-.612-.465v-.005h-.005c-.4-.246-.616-.512-.686-.71q-.104-.403.193-.6c.224-.135.38-.271.483-.336.104-.074.143-.102.176-.131h.002v-.003c.169-.202.436-.47.839-.601.139-.036.294-.065.466-.065zm2.8 2.142c.358 1.417 1.196 3.475 1.735 4.473.286.534.855 1.659 1.102 3.024.156-.005.33.018.513.064.646-1.671-.546-3.467-1.089-3.966-.22-.2-.232-.335-.123-.335.59.534 1.365 1.572 1.646 2.757.13.535.16 1.104.021 1.67.067.028.135.06.205.067 1.032.534 1.413.938 1.23 1.537v-.043c-.06-.003-.12 0-.18 0h-.016c.151-.467-.182-.825-1.065-1.224-.915-.4-1.646-.336-1.77.465-.008.043-.013.066-.018.135-.068.023-.139.053-.209.064-.43.268-.662.669-.793 1.187-.13.533-.17 1.156-.205 1.869v.003c-.02.334-.17.838-.319 1.35-1.5 1.072-3.58 1.538-5.348.334a2.7 2.7 0 0 0-.402-.533 1.5 1.5 0 0 0-.275-.333c.182 0 .338-.03.465-.067a.62.62 0 0 0 .314-.334c.108-.267 0-.697-.345-1.163s-.931-.995-1.788-1.521c-.63-.4-.986-.87-1.15-1.396-.165-.534-.143-1.085-.015-1.645.245-1.07.873-2.11 1.274-2.763.107-.065.037.135-.408.974-.396.751-1.14 2.497-.122 3.854a8.1 8.1 0 0 1 .647-2.876c.564-1.278 1.743-3.504 1.836-5.268.048.036.217.135.289.202.218.133.38.333.59.465.21.201.477.335.876.335q.058.005.11.006c.412 0 .73-.134.997-.268.29-.134.52-.334.74-.4h.005c.467-.135.835-.402 1.044-.7zm2.185 8.958c.037.6.343 1.245.882 1.377.588.134 1.434-.333 1.791-.765l.211-.01c.315-.007.577.01.847.268l.003.003c.208.199.305.53.391.876.085.4.154.78.409 1.066.486.527.645.906.636 1.14l.003-.007v.018l-.003-.012c-.015.262-.185.396-.498.595-.63.401-1.746.712-2.457 1.57-.618.737-1.37 1.14-2.036 1.191-.664.053-1.237-.2-1.574-.898l-.005-.003c-.21-.4-.12-1.025.056-1.69.176-.668.428-1.344.463-1.897.037-.714.076-1.335.195-1.814.12-.465.308-.797.641-.984l.045-.022zm-10.814.049h.01q.08 0 .157.014c.376.055.706.333 1.023.752l.91 1.664.003.003c.243.533.754 1.064 1.189 1.637.434.598.77 1.131.729 1.57v.006c-.057.744-.48 1.148-1.125 1.294-.645.135-1.52.002-2.395-.464-.968-.536-2.118-.469-2.857-.602q-.553-.1-.723-.4c-.11-.2-.113-.602.123-1.23v-.004l.002-.003c.117-.334.03-.752-.027-1.118-.055-.401-.083-.71.043-.94.16-.334.396-.4.69-.533.294-.135.64-.202.915-.47h.002v-.002c.256-.268.445-.601.668-.838.19-.201.38-.336.663-.336m7.159-9.074c-.435.201-.945.535-1.488.535-.542 0-.97-.267-1.28-.466-.154-.134-.28-.268-.373-.335-.164-.134-.144-.333-.074-.333.109.016.129.134.199.2.096.066.215.2.36.333.292.2.68.467 1.167.467.485 0 1.053-.267 1.398-.466.195-.135.445-.334.648-.467.156-.136.149-.267.279-.267.128.016.034.134-.147.332a8 8 0 0 1-.69.468zm-1.082-1.583V5.64c-.006-.02.013-.042.029-.05.074-.043.18-.027.26.004.063 0 .16.067.15.135-.006.049-.085.066-.135.066-.055 0-.092-.043-.141-.068-.052-.018-.146-.008-.163-.065m-.551 0c-.02.058-.113.049-.166.066-.047.025-.086.068-.14.068-.05 0-.13-.02-.136-.068-.01-.066.088-.133.15-.133.08-.031.184-.047.259-.005.019.009.036.03.03.05v.02h.003z"/></svg>'
-};
-document.querySelectorAll('.os-ico').forEach(el=>el.innerHTML=svg[el.dataset.ico]);
-
-async function sys(){
-  const ua=navigator.userAgent,plt=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||'';
-  if(/Android/i.test(ua))return{os:'android'};
-  if(/iPhone|iPad|iPod/i.test(ua)||(/Mac/i.test(plt)&&navigator.maxTouchPoints>1))return{os:'ios'};
-  if(/Win/i.test(plt+ua))return{os:'win'};
-  if(/Mac/i.test(plt+ua)){
-    let arm=true;
-    try{
-      const inf=await navigator.userAgentData.getHighEntropyValues(['architecture']);
-      arm=inf.architecture!=='x86';
-    }catch(err){}
-    return{os:'mac',arm};
-  }
-  if(/Linux|X11|CrOS/i.test(plt+ua))return{os:'linux'};
-  return{os:'other'};
-}
-
-const bin={
-  win:a=>a.find(x=>/\.exe$/i.test(x.name)),
-  winzip:a=>a.find(x=>/\.zip$/i.test(x.name)&&/win/i.test(x.name)),
-  appimage:a=>a.find(x=>/\.AppImage$/i.test(x.name)),
-  deb:a=>a.find(x=>/\.deb$/i.test(x.name)),
-  dmgarm:a=>a.find(x=>/\.dmg$/i.test(x.name)&&/arm64|aarch64|apple|silicon/i.test(x.name))||a.find(x=>/\.dmg$/i.test(x.name)&&!/x64|x86|intel/i.test(x.name)),
-  dmgx64:a=>a.find(x=>/\.dmg$/i.test(x.name)&&/x64|x86|intel/i.test(x.name))
-};
-
-(async()=>{
-  const cur=await sys(),btn=document.getElementById('dlMain'),msg=document.getElementById('dlNote');
-  const alt='https://rootless.shit.vc/fork',mob=cur.os==='android'||cur.os==='ios';
-  const lbl={win:'Windows',mac:'macOS',linux:'Linux',android:'Android',ios:'iOS'}[cur.os];
-  if(lbl){
-    document.getElementById('dlIcon').innerHTML=cur.os==='ios'?svg.mac:svg[cur.os];
-    document.getElementById('dlLabel').textContent='Download for '+lbl;
-  }
-  if(mob){
-    btn.href=alt;btn.target='_blank';btn.rel='noopener';
-    msg.innerHTML='Unofficial community fork, not an official Riff build. <a href="#faq">Read the FAQ</a>.';
-  }
-  try{
-    const res=await fetch('https://api.github.com/repos/'+rep+'/releases/latest');
-    if(!res.ok)throw 0;
-    const pkg=await res.json(),ast=pkg.assets||[],ver=(pkg.tag_name||'').replace(/^v/,'');
-    document.querySelectorAll('[data-asset]').forEach(el=>{
-      const a=bin[el.dataset.asset](ast);
-      if(a){
-        el.href=a.browser_download_url;
-        el.removeAttribute('target');
-      }else if(el.classList.contains('alt')){
-        el.style.display='none';
-      }else{
-        el.href=rel;
+  <script>
+    function parseQuery() {
+      const str = window.location.search || window.location.hash;
+      const map = new Map();
+      const raw = str.replace(/^[?#]/, '');
+      const parts = raw.split(/[?&]/);
+      for (const item of parts) {
+        if (!item) continue;
+        const [k, v] = item.split('=');
+        if (k) map.set(decodeURIComponent(k.trim()), v ? decodeURIComponent(v.trim()) : '');
       }
-    });
-    if(!bin.deb(ast)){
-      const req=document.getElementById('linuxReq');
-      if(req)req.textContent='AppImage';
+      return {
+        type: map.get('t') || 'music',
+        title: map.get('n') || map.get('name') || '',
+        artist: map.get('a') || map.get('artist') || '',
+        url: map.get('url') || '',
+        img: map.get('img') || map.get('cover') || '',
+        dur: parseInt(map.get('dur') || '0', 10),
+        id: map.get('id') || ''
+      };
     }
-    if(mob)return;
-    const key={win:'win',mac:cur.arm===false?'dmgx64':'dmgarm',linux:'appimage'}[cur.os],a=key&&bin[key](ast);
-    if(a)btn.href=a.browser_download_url;
-    if(lbl&&ver)msg.textContent='Version '+ver+' for '+lbl+'. Free and open source.';
-  }catch(err){console.warn('release lookup failed',err)}
-})();
 
-const cop=document.getElementById('copyMacCmd');
-cop.addEventListener('click',()=>{
-  navigator.clipboard.writeText('xattr -cr /Applications/Riff.app && brew install yt-dlp ffmpeg');
-  cop.textContent='Copied';
-  setTimeout(()=>cop.textContent='Copy',2000);
-});
+    const info = parseQuery();
+    const tag = (info.type || 'music').toLowerCase();
 
-document.querySelectorAll('.q button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const row=btn.parentElement,act=row.classList.contains('open');
-    document.querySelectorAll('.q').forEach(box=>{
-      box.classList.remove('open');
-      box.querySelector('button').setAttribute('aria-expanded','false');
-    });
-    if(!act){
-      row.classList.add('open');
-      btn.setAttribute('aria-expanded','true');
+    const titleEl = document.getElementById('item-title');
+    const authorEl = document.getElementById('item-artist');
+    const timeEl = document.getElementById('item-dur');
+    const dotEl = document.getElementById('bullet-dur');
+    const avaEl = document.getElementById('artist-avatar');
+    const picEl = document.getElementById('item-cover');
+    const picBox = document.getElementById('cover-wrap');
+    const glowEl = document.getElementById('hero-glow');
+    const docTitle = document.getElementById('page-title');
+    const playBtn = document.getElementById('btn-play');
+    const icoPlay = document.getElementById('play-icon');
+    const icoPause = document.getElementById('pause-icon');
+    const player = document.getElementById('audio-player');
+    const shareBtn = document.getElementById('btn-share');
+
+    const byArtist = (tag === 'artist');
+
+    titleEl.textContent = info.title || (byArtist ? info.artist : 'Untitled');
+    docTitle.textContent = `${info.title || info.artist || 'Riff'} | Riff`;
+
+    if (byArtist) {
+      picBox.classList.add('is-artist');
+      authorEl.textContent = 'Artist on Riff';
+    } else {
+      authorEl.textContent = info.artist || '';
+      authorEl.onclick = () => {
+        if (info.artist) window.location.search = `?t=artist&n=${encodeURIComponent(info.artist)}`;
+      };
+      if (info.dur > 0) {
+        const m = Math.floor(info.dur / 60);
+        const s = String(info.dur % 60).padStart(2, '0');
+        timeEl.textContent = `${m}:${s}`;
+        dotEl.style.display = 'inline';
+      }
     }
-  });
-});
 
-(()=>{
-  const dom=document.getElementById('page');
-  const sel=['.sec-copy','.bleed','.tiles-sec h2','.tile','.dl h2','.dl .lead','.fade-shot','.os','.code','.faq h2','.faq-list'];
-  const all=[...document.querySelectorAll(sel.join(','))];
-  all.forEach(el=>{
-    el.classList.add('rv');
-    const sib=[...el.parentElement.children].filter(c=>c.classList.contains('rv'));
-    el.style.setProperty('--d',(Math.max(0,sib.indexOf(el))*0.08)+'s');
-  });
-  if(!('IntersectionObserver' in window)){
-    all.forEach(el=>el.classList.add('in'));
-    return;
-  }
-  const obs=new IntersectionObserver(arr=>arr.forEach(hit=>{
-    if(hit.isIntersecting){
-      hit.target.classList.add('in');
-      obs.unobserve(hit.target);
-    }
-  }),{root:dom,threshold:.1,rootMargin:'0px 0px -6% 0px'});
-  all.forEach(el=>obs.observe(el));
-})();
-
-(()=>{
-  const box=document.getElementById('dots');
-  if(!box)return;
-  const pal=[['Blue','#0071e3'],['Purple','#8d5ef2'],['Pink','#ff2d92'],['Red','#ff3b30'],['Orange','#ff9500'],['Green','#28a745'],['Graphite','#3a3a3c']];
-  const doc=document.documentElement;
-  const rst=()=>box.querySelectorAll('.dot').forEach(d=>d.classList.remove('on'));
-  pal.forEach(([nam,col],idx)=>{
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='dot'+(idx===0?' on':'');
-    btn.style.setProperty('--c',col);
-    btn.setAttribute('aria-label',nam);
-    btn.addEventListener('click',()=>{
-      rst();
-      btn.classList.add('on');
-      doc.style.setProperty('--blue',col);
-    });
-    box.appendChild(btn);
-  });
-  const tag=document.createElement('label');
-  tag.className='dot custom';
-  tag.title='Custom color';
-  tag.style.setProperty('--c','#0071e3');
-  const inp=document.createElement('input');
-  inp.type='color';
-  inp.value='#0071e3';
-  inp.setAttribute('aria-label','Custom color');
-  inp.addEventListener('input',()=>{
-    rst();
-    tag.classList.add('on');
-    tag.style.setProperty('--c',inp.value);
-    doc.style.setProperty('--blue',inp.value);
-  });
-  tag.appendChild(inp);
-  box.appendChild(tag);
-})();
-
-(()=>{
-  const low=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function cnt(par,id,tag,get,dur,del,end){
-    const box=document.getElementById(par),odo=document.getElementById(id);
-    if(!box||!odo)return;
-    let arr=[];
-    function set(num){
-      const str=num.toLocaleString('en-US');
-      odo.innerHTML='';
-      arr=[];
-      odo.setAttribute('aria-label',str+' '+tag);
-      let rem=str.replace(/\D/g,'').length;
-      for(const chr of str){
-        if(/\d/.test(chr)){
-          rem--;
-          const col=document.createElement('span'),bar=document.createElement('span');
-          col.className='od';
-          bar.className='od-strip';
-          col.setAttribute('aria-hidden','true');
-          for(let idx=0;idx<30;idx++){
-            const bit=document.createElement('span');
-            bit.textContent=idx%10;
-            bar.appendChild(bit);
-          }
-          col.appendChild(bar);
-          odo.appendChild(col);
-          arr.push({bar,d:+chr,s:rem<2?2:rem<4?1:0});
-        }else{
-          const sep=document.createElement('span');
-          sep.className='od-sep';
-          sep.textContent=chr;
-          sep.setAttribute('aria-hidden','true');
-          odo.appendChild(sep);
+    if (info.img) {
+      picEl.src = info.img;
+      if (!byArtist) {
+        avaEl.src = info.img;
+        avaEl.style.display = 'inline-block';
+      }
+      getColor(info.img, (clr) => {
+        if (clr) {
+          glowEl.style.background = clr;
+          document.documentElement.style.setProperty('--accent', clr);
         }
-      }
-    }
-    function drw(pos){
-      const val=1-Math.pow(1-pos,4);
-      arr.forEach(it=>{
-        it.bar.style.transform='translateY('+(-(val*(10*it.s+it.d))*1.3)+'em)';
       });
     }
-    function run(){
-      if(low){drw(1);return}
-      const t0=performance.now();
-      (function tic(now){
-        const pos=Math.min(1,(now-t0)/dur);
-        drw(pos);
-        if(pos<1)requestAnimationFrame(tic);
-      })(t0);
+
+    function getColor(src, done) {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const cvs = document.createElement('canvas');
+          cvs.width = 16;
+          cvs.height = 16;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(img, 0, 0, 16, 16);
+          const px = ctx.getImageData(0, 0, 16, 16).data;
+          let r = 0, g = 0, b = 0, n = 0;
+          for (let i = 0; i < px.length; i += 4) {
+            r += px[i]; g += px[i+1]; b += px[i+2]; n++;
+          }
+          done(`rgb(${Math.round(r/n)}, ${Math.round(g/n)}, ${Math.round(b/n)})`);
+        } catch (_) { done(null); }
+      };
+      img.onerror = () => done(null);
+      img.src = src;
     }
-    get().then(num=>{
-      if(!(num>0)){box.style.display='none';return}
-      set(num);
-      drw(0);
-      box.classList.add('show');
-      if(end)end();
-      setTimeout(run,low?0:del);
-    }).catch(err=>{
-      box.style.display='none';
-      console.warn(tag+' count failed',err);
+
+    let on = false;
+    playBtn.addEventListener('click', () => {
+      if (info.url && /^https?:\/\//i.test(info.url) && /\.(mp3|m4a|ogg|wav)$/i.test(info.url)) {
+        if (!player.src) player.src = info.url;
+        if (on) {
+          player.pause();
+          on = false;
+          icoPlay.style.display = 'block';
+          icoPause.style.display = 'none';
+        } else {
+          player.play();
+          on = true;
+          icoPlay.style.display = 'none';
+          icoPause.style.display = 'block';
+        }
+      } else {
+        window.location.href = `riff://play?title=${encodeURIComponent(info.title)}&artist=${encodeURIComponent(info.artist)}&url=${encodeURIComponent(info.url)}`;
+        setTimeout(() => {
+          window.open('https://github.com/rootscripts/riff', '_blank');
+        }, 700);
+      }
     });
-  }
 
-  async function dls(){
-    let sum=0;
-    for(let pg=1;pg<=10;pg++){
-      const res=await fetch('https://api.github.com/repos/'+rep+'/releases?per_page=100&page='+pg);
-      if(!res.ok)throw new Error('http '+res.status);
-      const arr=await res.json();
-      arr.forEach(rel=>(rel.assets||[]).forEach(ast=>{sum+=ast.download_count||0}));
-      if(arr.length<100)break;
-    }
-    return sum;
-  }
-
-  async function str(){
-    const res=await fetch('https://api.github.com/repos/'+rep);
-    if(!res.ok)throw new Error('http '+res.status);
-    return (await res.json()).stargazers_count;
-  }
-
-  async function sub(){
-    const url='https://t.me/riffplayer';
-    const prx=[
-      uri=>'https://r.jina.ai/'+uri,
-      uri=>'https://api.allorigins.win/raw?url='+encodeURIComponent(uri),
-      uri=>'https://corsproxy.io/?'+encodeURIComponent(uri),
-      uri=>'https://api.codetabs.com/v1/proxy?quest='+uri
-    ];
-    const one=async fn=>{
-      const ctl=new AbortController(),tid=setTimeout(()=>ctl.abort(),9000);
-      try{
-        const res=await fetch(fn(url),{signal:ctl.signal});
-        if(!res.ok)throw 0;
-        const mat=(await res.text()).match(/(\d[\d\s,.\u00a0]*?)\s*(?:subscribers|members)\b/i);
-        const num=mat?parseInt(mat[1].replace(/\D/g,''),10):0;
-        if(!(num>0))throw 0;
-        return num;
-      }finally{clearTimeout(tid)}
-    };
-    try{
-      const num=await Promise.any(prx.map(one));
-      try{localStorage.setItem('riffSubs',num)}catch(err){}
-      return num;
-    }catch(err){
-      let old=0;
-      try{old=+localStorage.getItem('riffSubs')}catch(err){}
-      if(old>0)return old;
-      throw new Error('could not read the subscriber count');
-    }
-  }
-
-  cnt('counter','odo','total downloads',dls,2800,900);
-  cnt('stars','odoStars','GitHub stars',str,2200,1150);
-  cnt('subsC','odoSubs','Telegram subscribers',sub,2000,1400);
-})();
-</script>
+    shareBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard!');
+      });
+    });
+  </script>
 </body>
 </html>
