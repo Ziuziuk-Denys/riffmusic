@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;800&family=Google+Sans+Text:wght@400;500;700&display=swap" rel="stylesheet">
-  
   <style>
     :root {
       --bg: #121214;
@@ -177,7 +176,6 @@
       user-select: none;
     }
 
-    /* Точный слайдер Riff (палочка с отступом) */
     .sl {
       --v: 0;
       position: relative;
@@ -419,7 +417,8 @@
 
       <button class="btn-icon" id="btnCopyLink" title="Copy share link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+          <polyline points="15 14 20 9 15 4"></polyline>
+          <path d="M4 20v-7a4 4 0 0 1 4-4h12"></path>
         </svg>
       </button>
     </div>
@@ -431,893 +430,740 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     (function () {
-      const SAMPLE_COUNT = 360;
-      const PROFILE_RADIUS = 160;
-      const FULL_TURN = Math.PI * 2;
-      const DEGREE = Math.PI / 180;
-      const BISECTION_STEPS = 56;
+      const K = 360;
+      const R = 160;
+      const TAU = Math.PI * 2;
+      const DEG = Math.PI / 180;
 
-      const SHAPE_DEFINITIONS = [
+      const DEFS = [
         {
-          name: "Cookie7Sided",
           kind: "cookie",
           petals: 7,
           center: [160, 608.78580952],
           stretch: 1.00227424,
           rim: [154.0236, 15.1787],
           handle: [167.8238, 5.6686],
-          firstFlank: [[153.2414, 15.8961], [152.2361, 16.7034], [150.3202, 18.3516]],
-          secondFlank: [[149.7071, 18.9139], [149.4061, 19.195], [149.1302, 19.4773]],
-          valleyHandle: [145.6613, 23.5231]
+          f1: [[153.2414, 15.8961], [152.2361, 16.7034], [150.3202, 18.3516]],
+          f2: [[149.7071, 18.9139], [149.4061, 19.195], [149.1302, 19.4773]],
+          vh: [145.6613, 23.5231]
         },
         {
-          name: "Cookie9Sided",
           kind: "cookie",
           petals: 9,
           center: [1503, 163.34198056],
           stretch: 1.01036691,
           rim: [154.3557, 11.7227],
           handle: [165.6694, 4.4348],
-          firstFlank: [[153.9368, 12.0547], [153.4294, 12.4257], [152.4353, 13.1735]],
-          secondFlank: [[151.9994, 13.5097], [151.7843, 13.6784], [151.5812, 13.8451]],
-          valleyHandle: [147.3456, 17.7843]
+          f1: [[153.9368, 12.0547], [153.4294, 12.4257], [152.4353, 13.1735]],
+          f2: [[151.9994, 13.5097], [151.7843, 13.6784], [151.5812, 13.8451]],
+          vh: [147.3456, 17.7843]
         },
         {
-          name: "Cookie12Sided",
           kind: "cookie",
           petals: 12,
           center: [1974, 604.001],
           stretch: 1,
           rim: [152.8016, 8.376],
           handle: [163.2344, 3.4256],
-          firstFlank: [[152.6152, 8.4738], [152.3933, 8.5891], [151.9524, 8.8207]],
-          secondFlank: [[151.6913, 8.9609], [151.5576, 9.0305], [151.4338, 9.0971]],
-          valleyHandle: [145.4447, 12.6887]
+          f1: [[152.6152, 8.4738], [152.3933, 8.5891], [151.9524, 8.8207]],
+          f2: [[151.6913, 8.9609], [151.5576, 9.0305], [151.4338, 9.0971]],
+          vh: [145.4447, 12.6887]
         },
         {
-          name: "Clover4Leaf",
           kind: "clover",
           center: [1066.99925, 604.003],
-          outerStart: [38.73, -133.7908],
-          outerHandle: [98.8705, -159.911],
-          innerStart: [129.471, -28.79],
-          innerHandle: [121.4998, -10.42]
+          os: [38.73, -133.7908],
+          oh: [98.8705, -159.911],
+          is: [129.471, -28.79],
+          ih: [121.4998, -10.42]
         }
       ];
 
-      function pointOnCurve(curve, t) {
-        const rest = 1 - t;
-        const a = rest * rest * rest;
-        const b = 3 * rest * rest * t;
-        const c = 3 * rest * t * t;
-        const d = t * t * t;
+      function bezPt(c, t) {
+        const u = 1 - t;
+        const a = u * u * u;
+        const b = 3 * u * u * t;
+        const d = 3 * u * t * t;
+        const e = t * t * t;
         return [
-          a * curve[0][0] + b * curve[1][0] + c * curve[2][0] + d * curve[3][0],
-          a * curve[0][1] + b * curve[1][1] + c * curve[2][1] + d * curve[3][1]
+          a * c[0][0] + b * c[1][0] + d * c[2][0] + e * c[3][0],
+          a * c[0][1] + b * c[1][1] + d * c[2][1] + e * c[3][1]
         ];
       }
 
-      function straightLine(from, to) {
-        const stepX = (to[0] - from[0]) / 3;
-        const stepY = (to[1] - from[1]) / 3;
-        return [from, [from[0] + stepX, from[1] + stepY], [from[0] + 2 * stepX, from[1] + 2 * stepY], to];
+      function segLine(a, b) {
+        const dx = (b[0] - a[0]) / 3;
+        const dy = (b[1] - a[1]) / 3;
+        return [a, [a[0] + dx, a[1] + dy], [a[0] + 2 * dx, a[1] + 2 * dy], b];
       }
 
-      function placeOnPolar(center, stretch, radius, angle) {
-        return [center[0] + radius * Math.cos(angle), center[1] + stretch * radius * Math.sin(angle)];
+      function polar(c, st, r, ang) {
+        return [c[0] + r * Math.cos(ang), c[1] + st * r * Math.sin(ang)];
       }
 
-      function normalizeAngleDifference(difference) {
-        let result = difference % FULL_TURN;
-        if (result > Math.PI) result -= FULL_TURN;
-        if (result <= -Math.PI) result += FULL_TURN;
-        return result;
+      function wrapAng(d) {
+        let r = d % TAU;
+        if (r > Math.PI) r -= TAU;
+        if (r <= -Math.PI) r += TAU;
+        return r;
       }
 
-      function buildCookieOutline(definition) {
-        const { petals, center, stretch, rim, handle, firstFlank, secondFlank, valleyHandle } = definition;
-        const lobeStep = FULL_TURN / petals;
-        const outline = [];
-
-        for (let lobe = 0; lobe < petals; lobe++) {
-          const baseAngle = -Math.PI / 2 + lobe * lobeStep;
-          const place = (point) => placeOnPolar(center, stretch, point[0], baseAngle + point[1] * DEGREE);
-          const placeMirrored = (point) => placeOnPolar(center, stretch, point[0], baseAngle + lobeStep - point[1] * DEGREE);
-          const placeLeft = (point) => place([point[0], -point[1]]);
-
-          const firstFlankEnd = firstFlank[2];
-          const secondFlankEnd = secondFlank[2];
-
-          outline.push([placeLeft(rim), placeLeft(handle), place(handle), place(rim)]);
-          outline.push([place(rim), place(firstFlank[0]), place(firstFlank[1]), place(firstFlankEnd)]);
-          outline.push([place(firstFlankEnd), place(secondFlank[0]), place(secondFlank[1]), place(secondFlankEnd)]);
-          outline.push([place(secondFlankEnd), place(valleyHandle), placeMirrored(valleyHandle), placeMirrored(secondFlankEnd)]);
-          outline.push([placeMirrored(secondFlankEnd), placeMirrored(secondFlank[1]), placeMirrored(secondFlank[0]), placeMirrored(firstFlankEnd)]);
-          outline.push([placeMirrored(firstFlankEnd), placeMirrored(firstFlank[1]), placeMirrored(firstFlank[0]), placeMirrored(rim)]);
+      function mkCookie(d) {
+        const step = TAU / d.petals;
+        const out = [];
+        for (let i = 0; i < d.petals; i++) {
+          const base = -Math.PI / 2 + i * step;
+          const p = (pt) => polar(d.center, d.stretch, pt[0], base + pt[1] * DEG);
+          const pm = (pt) => polar(d.center, d.stretch, pt[0], base + step - pt[1] * DEG);
+          const pl = (pt) => p([pt[0], -pt[1]]);
+          const e1 = d.f1[2];
+          const e2 = d.f2[2];
+          out.push([pl(d.rim), pl(d.handle), p(d.handle), p(d.rim)]);
+          out.push([p(d.rim), p(d.f1[0]), p(d.f1[1]), p(e1)]);
+          out.push([p(e1), p(d.f2[0]), p(d.f2[1]), p(e2)]);
+          out.push([p(e2), p(d.vh), pm(d.vh), pm(e2)]);
+          out.push([pm(e2), pm(d.f2[1]), pm(d.f2[0]), pm(e1)]);
+          out.push([pm(e1), pm(d.f1[1]), pm(d.f1[0]), pm(d.rim)]);
         }
-
-        return outline;
+        return out;
       }
 
-      function buildCloverOutline(definition) {
-        const { center, outerStart, outerHandle, innerStart, innerHandle } = definition;
-        const outline = [];
-
-        const turnQuarters = (point, quarters) => {
-          let x = point[0];
-          let y = point[1];
-          for (let step = 0; step < quarters; step++) {
-            const turnedX = -y;
-            y = x;
-            x = turnedX;
-          }
-          return [center[0] + x, center[1] + y];
+      function mkClover(d) {
+        const out = [];
+        const rotQ = (pt, q) => {
+          let x = pt[0], y = pt[1];
+          for (let s = 0; s < q; s++) { const tx = -y; y = x; x = tx; }
+          return [d.center[0] + x, d.center[1] + y];
         };
-
-        for (let quarter = 0; quarter < 4; quarter++) {
-          const place = (point) => turnQuarters(point, quarter);
-          const outerArc = [
-            place(outerStart),
-            place(outerHandle),
-            place([-outerHandle[1], -outerHandle[0]]),
-            place([-outerStart[1], -outerStart[0]])
-          ];
-          const innerArc = [
-            place(innerStart),
-            place(innerHandle),
-            place([innerHandle[0], -innerHandle[1]]),
-            place([innerStart[0], -innerStart[1]])
-          ];
-          const nextOuterStart = turnQuarters(outerStart, quarter + 1);
-
-          outline.push(outerArc);
-          outline.push(straightLine(outerArc[3], innerArc[0]));
-          outline.push(innerArc);
-          outline.push(straightLine(innerArc[3], nextOuterStart));
+        for (let q = 0; q < 4; q++) {
+          const p = (pt) => rotQ(pt, q);
+          const oa = [p(d.os), p(d.oh), p([-d.oh[1], -d.oh[0]]), p([-d.os[1], -d.os[0]])];
+          const ia = [p(d.is), p(d.ih), p([d.ih[0], -d.ih[1]]), p([d.is[0], -d.is[1]])];
+          const next = rotQ(d.os, q + 1);
+          out.push(oa, segLine(oa[3], ia[0]), ia, segLine(ia[3], next));
         }
-
-        return outline;
+        return out;
       }
 
-      function buildOutline(definition) {
-        return definition.kind === "clover" ? buildCloverOutline(definition) : buildCookieOutline(definition);
-      }
-
-      function findCurveBounds(curve) {
-        const bounds = [Infinity, Infinity, -Infinity, -Infinity];
-        const include = (point) => {
-          bounds[0] = Math.min(bounds[0], point[0]);
-          bounds[1] = Math.min(bounds[1], point[1]);
-          bounds[2] = Math.max(bounds[2], point[0]);
-          bounds[3] = Math.max(bounds[3], point[1]);
+      function curveBbox(c) {
+        const b = [Infinity, Infinity, -Infinity, -Infinity];
+        const add = (p) => {
+          b[0] = Math.min(b[0], p[0]); b[1] = Math.min(b[1], p[1]);
+          b[2] = Math.max(b[2], p[0]); b[3] = Math.max(b[3], p[1]);
         };
-
-        include(curve[0]);
-        include(curve[3]);
-
-        for (let axis = 0; axis < 2; axis++) {
-          const first = curve[1][axis] - curve[0][axis];
-          const second = curve[2][axis] - curve[1][axis];
-          const third = curve[3][axis] - curve[2][axis];
-          const a = first - 2 * second + third;
-          const b = 2 * (second - first);
-          const c = first;
+        add(c[0]); add(c[3]);
+        for (let ax = 0; ax < 2; ax++) {
+          const d1 = c[1][ax] - c[0][ax];
+          const d2 = c[2][ax] - c[1][ax];
+          const d3 = c[3][ax] - c[2][ax];
+          const A = d1 - 2 * d2 + d3;
+          const B = 2 * (d2 - d1);
+          const C = d1;
           const roots = [];
-
-          if (Math.abs(a) < 1e-12) {
-            if (Math.abs(b) > 1e-12) roots.push(-c / b);
+          if (Math.abs(A) < 1e-12) {
+            if (Math.abs(B) > 1e-12) roots.push(-C / B);
           } else {
-            const discriminant = b * b - 4 * a * c;
-            if (discriminant >= 0) {
-              const root = Math.sqrt(discriminant);
-              roots.push((-b + root) / (2 * a), (-b - root) / (2 * a));
+            const disc = B * B - 4 * A * C;
+            if (disc >= 0) {
+              const sq = Math.sqrt(disc);
+              roots.push((-B + sq) / (2 * A), (-B - sq) / (2 * A));
             }
           }
-
-          roots.forEach((t) => {
-            if (t > 0 && t < 1) include(pointOnCurve(curve, t));
-          });
+          roots.forEach((t) => { if (t > 0 && t < 1) add(bezPt(c, t)); });
         }
-
-        return bounds;
+        return b;
       }
 
-      function findBoundsCenter(outline) {
-        const total = [Infinity, Infinity, -Infinity, -Infinity];
-        outline.forEach((curve) => {
-          const bounds = findCurveBounds(curve);
-          total[0] = Math.min(total[0], bounds[0]);
-          total[1] = Math.min(total[1], bounds[1]);
-          total[2] = Math.max(total[2], bounds[2]);
-          total[3] = Math.max(total[3], bounds[3]);
+      function getCenter(out) {
+        const tot = [Infinity, Infinity, -Infinity, -Infinity];
+        out.forEach((c) => {
+          const b = curveBbox(c);
+          tot[0] = Math.min(tot[0], b[0]); tot[1] = Math.min(tot[1], b[1]);
+          tot[2] = Math.max(tot[2], b[2]); tot[3] = Math.max(tot[3], b[3]);
         });
-        return [(total[0] + total[2]) / 2, (total[1] + total[3]) / 2];
+        return [(tot[0] + tot[2]) / 2, (tot[1] + tot[3]) / 2];
       }
 
-      function angleFromCenter(point, center) {
-        return Math.atan2(point[1] - center[1], point[0] - center[0]);
+      function angTo(pt, c) {
+        return Math.atan2(pt[1] - c[1], pt[0] - c[0]);
       }
 
-      function createSections(outline, center) {
-        const sections = [];
-        let angle = angleFromCenter(outline[0][0], center);
-
-        outline.forEach((curve) => {
-          const startAngle = angle;
-          const endAngle = startAngle + normalizeAngleDifference(angleFromCenter(curve[3], center) - startAngle);
-          sections.push({ curve, startAngle, endAngle });
-          angle = endAngle;
+      function mkSects(out, c) {
+        const res = [];
+        let a = angTo(out[0][0], c);
+        out.forEach((curve) => {
+          const s = a;
+          const e = s + wrapAng(angTo(curve[3], c) - s);
+          res.push({ curve, s, e });
+          a = e;
         });
-
-        return sections;
+        return res;
       }
 
-      function reverseOutline(outline) {
-        return outline.slice().reverse().map((curve) => curve.slice().reverse());
-      }
-
-      function createAscendingSections(outline, center) {
-        let sections = createSections(outline, center);
-        const sweep = sections[sections.length - 1].endAngle - sections[0].startAngle;
-        if (sweep < 0) sections = createSections(reverseOutline(outline), center);
-        return sections;
-      }
-
-      function measureRadius(sections, center, angle) {
-        const firstAngle = sections[0].startAngle;
-        const target = firstAngle + ((((angle - firstAngle) % FULL_TURN) + FULL_TURN) % FULL_TURN);
-        let section = sections[sections.length - 1];
-
-        for (let index = 0; index < sections.length; index++) {
-          if (target >= sections[index].startAngle && target <= sections[index].endAngle) {
-            section = sections[index];
-            break;
-          }
+      function sampleRad(sects, c, ang) {
+        const a0 = sects[0].s;
+        const tgt = a0 + ((((ang - a0) % TAU) + TAU) % TAU);
+        let sec = sects[sects.length - 1];
+        for (let i = 0; i < sects.length; i++) {
+          if (tgt >= sects[i].s && tgt <= sects[i].e) { sec = sects[i]; break; }
         }
-
-        let low = 0;
-        let high = 1;
-        for (let step = 0; step < BISECTION_STEPS; step++) {
-          const middle = (low + high) / 2;
-          const point = pointOnCurve(section.curve, middle);
-          const pointAngle = section.startAngle + normalizeAngleDifference(angleFromCenter(point, center) - section.startAngle);
-          if (pointAngle < target) low = middle; else high = middle;
+        let lo = 0, hi = 1;
+        for (let i = 0; i < 56; i++) {
+          const mid = (lo + hi) / 2;
+          const pt = bezPt(sec.curve, mid);
+          const pa = sec.s + wrapAng(angTo(pt, c) - sec.s);
+          if (pa < tgt) lo = mid; else hi = mid;
         }
-
-        const point = pointOnCurve(section.curve, (low + high) / 2);
-        return Math.hypot(point[0] - center[0], point[1] - center[1]);
+        const pt = bezPt(sec.curve, (lo + hi) / 2);
+        return Math.hypot(pt[0] - c[0], pt[1] - c[1]);
       }
 
-      function createProfile(definition) {
-        const outline = buildOutline(definition);
-        const center = findBoundsCenter(outline);
-        const sections = createAscendingSections(outline, center);
-        const radii = new Float32Array(SAMPLE_COUNT);
-        let largestRadius = 0;
-
-        for (let index = 0; index < SAMPLE_COUNT; index++) {
-          const angle = -Math.PI + (FULL_TURN * index) / SAMPLE_COUNT;
-          radii[index] = measureRadius(sections, center, angle);
-          if (radii[index] > largestRadius) largestRadius = radii[index];
+      function buildProf(d) {
+        const out = d.kind === "clover" ? mkClover(d) : mkCookie(d);
+        const c = getCenter(out);
+        let sects = mkSects(out, c);
+        if (sects[sects.length - 1].e - sects[0].s < 0) {
+          sects = mkSects(out.slice().reverse().map((cv) => cv.slice().reverse()), c);
         }
-
-        const scale = PROFILE_RADIUS / largestRadius;
-        for (let index = 0; index < SAMPLE_COUNT; index++) radii[index] *= scale;
-        return radii;
+        const rads = new Float32Array(K);
+        let maxR = 0;
+        for (let i = 0; i < K; i++) {
+          const a = -Math.PI + (TAU * i) / K;
+          rads[i] = sampleRad(sects, c, a);
+          if (rads[i] > maxR) maxR = rads[i];
+        }
+        const sc = R / maxR;
+        for (let i = 0; i < K; i++) rads[i] *= sc;
+        return rads;
       }
 
-      function easeInOutCubic(progress) {
-        return progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-      }
+      const profs = DEFS.map(buildProf);
+      const hist = [0];
 
-      const shapeProfiles = SHAPE_DEFINITIONS.map(createProfile);
-      const shapeHistory = [0];
-
-      function chooseNextShape(current) {
-        const lastShown = shapeHistory[shapeHistory.length - 1];
-        if (current !== undefined && (shapeHistory.length === 0 || lastShown !== current)) {
-          shapeHistory.push(current);
-        }
-
-        const recentlyShown = shapeHistory.slice(-2);
-        const candidates = shapeProfiles.map((_, index) => index).filter((index) => !recentlyShown.includes(index));
-        const chosen = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : 0;
-
-        shapeHistory.push(chosen);
-        if (shapeHistory.length > 10) shapeHistory.shift();
-        return chosen;
+      function nextShape(cur) {
+        if (cur !== undefined && hist[hist.length - 1] !== cur) hist.push(cur);
+        const rec = hist.slice(-2);
+        const opts = profs.map((_, i) => i).filter((i) => !rec.includes(i));
+        const pick = opts.length ? opts[Math.floor(Math.random() * opts.length)] : 0;
+        hist.push(pick);
+        if (hist.length > 10) hist.shift();
+        return pick;
       }
 
       window.RiffShapes = {
-        K: SAMPLE_COUNT,
+        K,
         HOLD_MS: 2400,
         MORPH_MS: 1300,
-        ease: easeInOutCubic,
-        ready: () => shapeProfiles.length > 0,
-        profile: (index) => shapeProfiles[index],
-        next: chooseNextShape
+        ease: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+        ready: () => profs.length > 0,
+        profile: (i) => profs[i],
+        next: nextShape
       };
     })();
 
-    function rgbToHsl(r, g, b) {
+    function toHsl(r, g, b) {
       r /= 255; g /= 255; b /= 255;
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
-      let h, s, l = (max + min) / 2;
-      if (max === min) {
-        h = s = 0;
-      } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-          case g: h = ((b - r) / d + 2) / 6; break;
-          case b: h = ((r - g) / d + 4) / 6; break;
-        }
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      let h = 0, s = 0, l = (mx + mn) / 2;
+      if (mx !== mn) {
+        const d = mx - mn;
+        s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+        if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        else if (mx === g) h = ((b - r) / d + 2) / 6;
+        else h = ((r - g) / d + 4) / 6;
       }
       return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
     }
 
-    function applyDynamicM3Theme(h, s) {
-      const intensity = Math.min(1, Math.max(0, s / 85));
-      const priSat = Math.round(18 + intensity * 74);
-      const surfSat = Math.round(intensity * 36);
+    function setTheme(h, s) {
+      const k = Math.min(1, Math.max(0, s / 85));
+      const pSat = Math.round(18 + k * 74);
+      const bgSat = Math.round(k * 36);
 
-      const pri = `hsl(${h}, ${priSat}%, 78%)`;
-      const onPri = `hsl(${h}, ${Math.min(100, priSat)}%, 16%)`;
-      const priCont = `hsl(${h}, ${Math.round(priSat * 0.75)}%, 30%)`;
-      const onPriCont = `hsl(${h}, ${priSat}%, 92%)`;
-      const bg = `hsl(${h}, ${surfSat}%, 8%)`;
-      const surface = `hsl(${h}, ${surfSat}%, 12%)`;
-      const surfaceHigh = `hsl(${h}, ${surfSat}%, 17%)`;
-      const surfaceHighest = `hsl(${h}, ${surfSat}%, 22%)`;
-      const onSurface = `hsl(${h}, ${Math.round(surfSat * 0.6)}%, 93%)`;
-      const onSurfaceVariant = `hsl(${h}, ${Math.round(surfSat * 0.7)}%, 78%)`;
-      const outline = `hsl(${h}, ${Math.round(surfSat * 0.5)}%, 58%)`;
+      const pri = `hsl(${h}, ${pSat}%, 78%)`;
+      const onPri = `hsl(${h}, ${Math.min(100, pSat)}%, 16%)`;
+      const priCont = `hsl(${h}, ${Math.round(pSat * 0.75)}%, 30%)`;
+      const onPriCont = `hsl(${h}, ${pSat}%, 92%)`;
+      const bg = `hsl(${h}, ${bgSat}%, 8%)`;
+      const surf = `hsl(${h}, ${bgSat}%, 12%)`;
+      const surfHi = `hsl(${h}, ${bgSat}%, 17%)`;
+      const surfMax = `hsl(${h}, ${bgSat}%, 22%)`;
+      const onSurf = `hsl(${h}, ${Math.round(bgSat * 0.6)}%, 93%)`;
+      const onSurfVar = `hsl(${h}, ${Math.round(bgSat * 0.7)}%, 78%)`;
+      const outl = `hsl(${h}, ${Math.round(bgSat * 0.5)}%, 58%)`;
 
-      const root = document.documentElement.style;
-      root.setProperty('--primary', pri);
-      root.setProperty('--on-primary', onPri);
-      root.setProperty('--primary-container', priCont);
-      root.setProperty('--on-primary-container', onPriCont);
-      root.setProperty('--bg', bg);
-      root.setProperty('--surface', surface);
-      root.setProperty('--surface-high', surfaceHigh);
-      root.setProperty('--surface-highest', surfaceHighest);
-      root.setProperty('--on-surface', onSurface);
-      root.setProperty('--on-surface-variant', onSurfaceVariant);
-      root.setProperty('--outline', outline);
-      root.setProperty('--accent', pri);
+      const st = document.documentElement.style;
+      st.setProperty('--primary', pri);
+      st.setProperty('--on-primary', onPri);
+      st.setProperty('--primary-container', priCont);
+      st.setProperty('--on-primary-container', onPriCont);
+      st.setProperty('--bg', bg);
+      st.setProperty('--surface', surf);
+      st.setProperty('--surface-high', surfHi);
+      st.setProperty('--surface-highest', surfMax);
+      st.setProperty('--on-surface', onSurf);
+      st.setProperty('--on-surface-variant', onSurfVar);
+      st.setProperty('--outline', outl);
+      st.setProperty('--accent', pri);
 
       heroGlow.style.background = pri;
-      heroGlow.style.opacity = String((0.22 + intensity * 0.28).toFixed(2));
+      heroGlow.style.opacity = String((0.22 + k * 0.28).toFixed(2));
     }
 
-    function analyzeCoverAndTheme(img) {
+    function getColors(img) {
       const c = document.createElement('canvas');
       c.width = 48;
       c.height = 48;
       const x = c.getContext('2d');
       try {
         x.drawImage(img, 0, 0, 48, 48);
-        const data = x.getImageData(0, 0, 48, 48).data;
-        const bins = Array.from({ length: 24 }, () => ({ weight: 0, sSum: 0, hSum: 0 }));
-        let totalChromatic = 0;
-        let maxWeight = 0;
-        let bestBin = null;
+        const px = x.getImageData(0, 0, 48, 48).data;
+        const bins = Array.from({ length: 24 }, () => ({ w: 0 }));
+        let colored = 0, bestW = 0, bestIdx = -1;
 
-        for (let i = 0; i < data.length; i += 4) {
-          const a = data[i + 3];
-          if (a < 128) continue;
-          const r = data[i], g = data[i + 1], b = data[i + 2];
-          const [h, s, l] = rgbToHsl(r, g, b);
+        for (let i = 0; i < px.length; i += 4) {
+          if (px[i + 3] < 128) continue;
+          const [h, s, l] = toHsl(px[i], px[i + 1], px[i + 2]);
           if (l >= 10 && l <= 90 && s >= 10) {
-            totalChromatic++;
+            colored++;
             const idx = Math.min(23, Math.floor(h / 15));
-            const bin = bins[idx];
             const w = (s / 100) * (1 - Math.abs(l - 50) / 55);
-            bin.weight += Math.max(0.1, w);
-            bin.sSum += s;
-            bin.hSum += h;
-            if (bin.weight > maxWeight) {
-              maxWeight = bin.weight;
-              bestBin = bin;
+            bins[idx].w += Math.max(0.1, w);
+            if (bins[idx].w > bestW) {
+              bestW = bins[idx].w;
+              bestIdx = idx;
             }
           }
         }
 
-        if (bestBin && totalChromatic > 20) {
-          const countEstimate = bins.reduce((acc, b) => acc + (b === bestBin ? 1 : 0), 0);
-          let avgH = 0, avgS = 0, cnt = 0;
-          for (let i = 0; i < data.length; i += 4) {
-            const [h, s, l] = rgbToHsl(data[i], data[i + 1], data[i + 2]);
-            if (l >= 10 && l <= 90 && s >= 10 && Math.min(23, Math.floor(h / 15)) === bins.indexOf(bestBin)) {
-              avgH += h;
-              avgS += s;
-              cnt++;
+        if (bestIdx !== -1 && colored > 20) {
+          let hSum = 0, sSum = 0, n = 0;
+          for (let i = 0; i < px.length; i += 4) {
+            const [h, s, l] = toHsl(px[i], px[i + 1], px[i + 2]);
+            if (l >= 10 && l <= 90 && s >= 10 && Math.min(23, Math.floor(h / 15)) === bestIdx) {
+              hSum += h; sSum += s; n++;
             }
           }
-          const finalHue = cnt > 0 ? Math.round(avgH / cnt) : 270;
-          const finalSat = cnt > 0 ? Math.round(avgS / cnt) : 70;
-          applyDynamicM3Theme(finalHue, finalSat);
-          return true;
-        } else {
-          applyDynamicM3Theme(270, 8);
+          setTheme(n ? Math.round(hSum / n) : 270, n ? Math.round(sSum / n) : 70);
           return true;
         }
+        setTheme(270, 8);
+        return true;
       } catch {
         return false;
       }
     }
 
-    function parseParameters() {
-      const query = window.location.search || window.location.hash || '';
-      const params = new Map();
-      const clean = query.replace(/^[?#]/, '');
-      const segments = clean.split(/[?&]/);
-      for (const pair of segments) {
-        if (!pair) continue;
-        const eqIdx = pair.indexOf('=');
-        if (eqIdx !== -1) {
-          const key = decodeClean(pair.slice(0, eqIdx));
-          const val = decodeClean(pair.slice(eqIdx + 1));
-          params.set(key, val);
-        }
+    function dec(s) {
+      if (!s) return '';
+      try { return decodeURIComponent(s.replace(/\+/g, ' ')).trim(); }
+      catch { return s.replace(/\+/g, ' ').trim(); }
+    }
+
+    function parseUrl() {
+      const q = (window.location.search || window.location.hash || '').replace(/^[?#]/, '');
+      const map = new Map();
+      for (const part of q.split(/[?&]/)) {
+        if (!part) continue;
+        const eq = part.indexOf('=');
+        if (eq !== -1) map.set(dec(part.slice(0, eq)), dec(part.slice(eq + 1)));
       }
       return {
-        type: params.get('t') || 'music',
-        title: params.get('n') || '',
-        artist: params.get('a') || '',
-        streamUrl: params.get('stream') || '',
-        mediaUrl: params.get('url') || '',
-        image: params.get('img') || '',
-        duration: parseInt(params.get('dur') || '0', 10)
+        type: map.get('t') || 'music',
+        title: map.get('n') || '',
+        artist: map.get('a') || '',
+        streamUrl: map.get('stream') || '',
+        mediaUrl: map.get('url') || '',
+        image: map.get('img') || '',
+        duration: parseInt(map.get('dur') || '0', 10)
       };
     }
 
-    function decodeClean(str) {
-      if (!str) return '';
-      try {
-        return decodeURIComponent(str.replace(/\+/g, ' ')).trim();
-      } catch {
-        return str.replace(/\+/g, ' ').trim();
-      }
-    }
-
-    function formatTime(seconds) {
-      if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60);
+    function fmtTime(sec) {
+      if (!sec || isNaN(sec) || sec < 0) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    const payload = parseParameters();
+    const info = parseUrl();
 
-    const titleElement = document.getElementById('trackTitle');
-    const artistElement = document.getElementById('trackArtist');
+    const titleEl = document.getElementById('trackTitle');
+    const artistEl = document.getElementById('trackArtist');
     const pageTitle = document.getElementById('pageTitle');
     const heroGlow = document.getElementById('heroGlow');
 
-    const nativeAudio = document.getElementById('nativeAudio');
+    const audio = document.getElementById('nativeAudio');
     const btnPlay = document.getElementById('btnPlay');
     const playIcon = document.getElementById('playIcon');
     const pauseIcon = document.getElementById('pauseIcon');
     const seekSlider = document.getElementById('seekSlider');
-    const seekSlWrap = document.getElementById('seekSlWrap');
-    const currentTimeText = document.getElementById('currentTime');
-    const totalDurationText = document.getElementById('totalDuration');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volSlWrap = document.getElementById('volSlWrap');
+    const seekWrap = document.getElementById('seekSlWrap');
+    const curTimeEl = document.getElementById('currentTime');
+    const durTimeEl = document.getElementById('totalDuration');
+    const volSlider = document.getElementById('volumeSlider');
+    const volWrap = document.getElementById('volSlWrap');
     const btnMute = document.getElementById('btnMute');
-    const btnCopyLink = document.getElementById('btnCopyLink');
+    const btnCopy = document.getElementById('btnCopyLink');
 
-    titleElement.textContent = payload.title || payload.artist || 'Untitled';
-    artistElement.textContent = payload.artist || '';
-    pageTitle.textContent = payload.title ? `${payload.title} — ${payload.artist}` : 'Riff';
+    titleEl.textContent = info.title || info.artist || 'Untitled';
+    artistEl.textContent = info.artist || '';
+    pageTitle.textContent = info.title ? `${info.title} — ${info.artist}` : 'Riff';
 
-    if (payload.duration > 0) {
-      totalDurationText.textContent = formatTime(payload.duration);
-      seekSlider.max = payload.duration;
+    if (info.duration > 0) {
+      durTimeEl.textContent = fmtTime(info.duration);
+      seekSlider.max = info.duration;
     }
 
-    function updateSliderVisuals(slider, wrap) {
-      const min = parseFloat(slider.min) || 0;
-      const max = parseFloat(slider.max) || 100;
-      const val = parseFloat(slider.value) || 0;
-      const ratio = max > min ? Math.max(0, Math.min(1, (val - min) / (max - min))) : 0;
-      wrap.style.setProperty('--v', ratio.toFixed(4));
+    function updBar(sl, wrap) {
+      const min = parseFloat(sl.min) || 0;
+      const max = parseFloat(sl.max) || 100;
+      const val = parseFloat(sl.value) || 0;
+      const r = max > min ? Math.max(0, Math.min(1, (val - min) / (max - min))) : 0;
+      wrap.style.setProperty('--v', r.toFixed(4));
     }
 
-    updateSliderVisuals(seekSlider, seekSlWrap);
-    updateSliderVisuals(volumeSlider, volSlWrap);
+    updBar(seekSlider, seekWrap);
+    updBar(volSlider, volWrap);
 
     const canvas = document.getElementById('m3CoverCanvas');
     const dpr = window.devicePixelRatio || 1;
-    const CANVAS_SIZE = 360;
-    canvas.width = CANVAS_SIZE * dpr;
-    canvas.height = CANVAS_SIZE * dpr;
+    const SZ = 360;
+    canvas.width = SZ * dpr;
+    canvas.height = SZ * dpr;
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    let activeCoverImage = null;
-    let imageReady = false;
+    let coverImg = null;
+    let imgOk = false;
 
-    function loadCoverWithCorsFallback(rawUrl) {
-      if (!rawUrl) return;
-      const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=600&h=600&fit=cover&output=jpg`;
-
-      const corsImg = new Image();
-      corsImg.crossOrigin = 'Anonymous';
-      corsImg.onload = () => {
-        activeCoverImage = corsImg;
-        imageReady = true;
-        if (!analyzeCoverAndTheme(corsImg)) {
-          loadViaProxy(proxyUrl);
-        }
+    function loadProxy(proxyUrl, rawUrl) {
+      const pImg = new Image();
+      pImg.crossOrigin = 'Anonymous';
+      pImg.onload = () => {
+        coverImg = pImg;
+        imgOk = true;
+        getColors(pImg);
       };
-      corsImg.onerror = () => {
-        loadViaProxy(proxyUrl, rawUrl);
-      };
-      corsImg.src = rawUrl;
-    }
-
-    function loadViaProxy(proxyUrl, fallbackRawUrl) {
-      const proxyImg = new Image();
-      proxyImg.crossOrigin = 'Anonymous';
-      proxyImg.onload = () => {
-        activeCoverImage = proxyImg;
-        imageReady = true;
-        analyzeCoverAndTheme(proxyImg);
-      };
-      proxyImg.onerror = () => {
-        if (!fallbackRawUrl) return;
-        const plainImg = new Image();
-        plainImg.onload = () => {
-          activeCoverImage = plainImg;
-          imageReady = true;
+      pImg.onerror = () => {
+        if (!rawUrl) return;
+        const fallback = new Image();
+        fallback.onload = () => {
+          coverImg = fallback;
+          imgOk = true;
         };
-        plainImg.src = fallbackRawUrl;
+        fallback.src = rawUrl;
       };
-      proxyImg.src = proxyUrl;
+      pImg.src = proxyUrl;
     }
 
-    function resolveCoverSource() {
-      if (payload.image) {
-        loadCoverWithCorsFallback(payload.image);
+    function loadCover(url) {
+      if (!url) return;
+      const proxy = `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=600&h=600&fit=cover&output=jpg`;
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        coverImg = img;
+        imgOk = true;
+        if (!getColors(img)) loadProxy(proxy, url);
+      };
+      img.onerror = () => loadProxy(proxy, url);
+      img.src = url;
+    }
+
+    function initCover() {
+      if (info.image) {
+        loadCover(info.image);
         return;
       }
-      const ytIdMatch = (payload.mediaUrl || '').match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
-      if (ytIdMatch) {
-        loadCoverWithCorsFallback(`https://i.ytimg.com/vi/${ytIdMatch[1]}/hqdefault.jpg`);
+      const yt = (info.mediaUrl || '').match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
+      if (yt) {
+        loadCover(`https://i.ytimg.com/vi/${yt[1]}/hqdefault.jpg`);
         return;
       }
-      const query = `${payload.artist} ${payload.title}`.trim();
-      if (query) {
-        fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=1`)
-          .then(r => r.json())
-          .then(data => {
-            const hit = data.results && data.results[0];
-            if (hit && hit.artworkUrl100) {
-              loadCoverWithCorsFallback(hit.artworkUrl100.replace('100x100', '600x600'));
-            }
+      const q = `${info.artist} ${info.title}`.trim();
+      if (q) {
+        fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`)
+          .then((r) => r.json())
+          .then((d) => {
+            const hit = d.results && d.results[0];
+            if (hit && hit.artworkUrl100) loadCover(hit.artworkUrl100.replace('100x100', '600x600'));
           })
           .catch(() => {});
       }
     }
 
-    resolveCoverSource();
+    initCover();
 
-    const m3State = {
-      from: 0,
-      to: 0,
-      start: 0,
-      rotation: 0,
-      phase: 0,
-      last: 0
-    };
+    const st = { from: 0, to: 0, start: 0, rot: 0, phase: 0, last: 0 };
 
-    function getShapeRadii(now) {
+    function curShape(now) {
       const S = window.RiffShapes;
       if (!S || !S.ready()) return null;
-      if (!m3State.start) {
-        m3State.start = now;
-        m3State.from = 0;
-        m3State.to = 0;
+      if (!st.start) st.start = now;
+      if (now - st.start >= S.HOLD_MS) {
+        st.from = st.to;
+        st.to = S.next(st.from);
+        st.start = now;
       }
-      if (now - m3State.start >= S.HOLD_MS) {
-        m3State.from = m3State.to;
-        m3State.to = S.next(m3State.from);
-        m3State.start = now;
-      }
-      const t = Math.min(1, (now - m3State.start) / S.MORPH_MS);
-      return { a: S.profile(m3State.from), b: S.profile(m3State.to), e: S.ease(t) };
+      const t = Math.min(1, (now - st.start) / S.MORPH_MS);
+      return { a: S.profile(st.from), b: S.profile(st.to), e: S.ease(t) };
     }
 
-    function renderM3Cover(now) {
+    function drawLoop(now) {
       const S = window.RiffShapes;
       if (!ctx || !S) return;
 
-      if (!m3State.last) m3State.last = now;
-      const delta = Math.min(48, Math.max(0, now - m3State.last));
-      m3State.last = now;
+      if (!st.last) st.last = now;
+      const dt = Math.min(48, Math.max(0, now - st.last));
+      st.last = now;
 
-      const rotSpeed = playbackActive ? 0.00045 : 0.00012;
-      m3State.rotation = (m3State.rotation + rotSpeed * delta) % (Math.PI * 2);
-      if (playbackActive) m3State.phase += 0.006 * delta;
+      st.rot = (st.rot + (isPlaying ? 0.00045 : 0.00012) * dt) % (Math.PI * 2);
+      if (isPlaying) st.phase += 0.006 * dt;
 
-      const sh = getShapeRadii(now);
+      const sh = curShape(now);
       if (!sh) return;
 
       const K = S.K;
-      const cx = CANVAS_SIZE / 2;
-      const cy = CANVAS_SIZE / 2;
-      const coverSize = 250;
-      const scale = (coverSize / 2) / 160;
-      const rot = m3State.rotation;
+      const cx = SZ / 2, cy = SZ / 2;
+      const box = 250;
+      const sc = (box / 2) / 160;
+      const rot = st.rot;
 
-      function radiusAt(shapeAngle) {
-        const f = ((shapeAngle + Math.PI) / (Math.PI * 2)) * K;
+      function radAt(ang) {
+        const f = ((ang + Math.PI) / (Math.PI * 2)) * K;
         const i0 = ((Math.floor(f) % K) + K) % K;
         const i1 = (i0 + 1) % K;
         const w = f - Math.floor(f);
         const r0 = sh.a[i0] + (sh.b[i0] - sh.a[i0]) * sh.e;
         const r1 = sh.a[i1] + (sh.b[i1] - sh.a[i1]) * sh.e;
-        return (r0 + (r1 - r0) * w) * scale;
+        return (r0 + (r1 - r0) * w) * sc;
       }
 
-      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      ctx.clearRect(0, 0, SZ, SZ);
 
       ctx.save();
       ctx.beginPath();
       for (let k = 0; k <= K; k++) {
         const th = -Math.PI + (Math.PI * 2 * (k % K)) / K;
-        const r = radiusAt(th);
+        const r = radAt(th);
         const x = cx + Math.cos(th + rot) * r;
         const y = cy + Math.sin(th + rot) * r;
-        if (k === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.closePath();
       ctx.clip();
 
-      if (imageReady && activeCoverImage) {
-        const iw = activeCoverImage.naturalWidth || 300;
-        const ih = activeCoverImage.naturalHeight || 300;
+      if (imgOk && coverImg) {
+        const iw = coverImg.naturalWidth || 300;
+        const ih = coverImg.naturalHeight || 300;
         const side = Math.min(iw, ih);
-        const targetSide = Math.ceil(coverSize * 1.08);
-        ctx.drawImage(activeCoverImage, (iw - side) / 2, (ih - side) / 2, side, side, cx - targetSide / 2, cy - targetSide / 2, targetSide, targetSide);
+        const tSide = Math.ceil(box * 1.08);
+        ctx.drawImage(coverImg, (iw - side) / 2, (ih - side) / 2, side, side, cx - tSide / 2, cy - tSide / 2, tSide, tSide);
       } else {
         ctx.fillStyle = '#2b2930';
-        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        ctx.fillRect(0, 0, SZ, SZ);
       }
       ctx.restore();
 
-      const duration = parseFloat(seekSlider.max) || 100;
-      const currentPos = parseFloat(seekSlider.value) || 0;
-      const progress = duration > 0 ? Math.min(1, Math.max(0, currentPos / duration)) : 0;
-      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#d0bcff';
+      const dur = parseFloat(seekSlider.max) || 100;
+      const pos = parseFloat(seekSlider.value) || 0;
+      const prog = dur > 0 ? Math.min(1, Math.max(0, pos / dur)) : 0;
+      const col = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#d0bcff';
 
-      const STEPS = 220;
-      const ringGap = 12;
-      const ringWidth = 3.5;
-
-      function ringPoint(phi, wave) {
-        const r = radiusAt(phi - rot) + ringGap + ringWidth / 2 + wave;
+      const N = 220, gap = 12, lw = 3.5;
+      const ringPt = (phi, wv) => {
+        const r = radAt(phi - rot) + gap + lw / 2 + wv;
         return [cx + Math.cos(phi) * r, cy + Math.sin(phi) * r];
-      }
+      };
 
-      const startPhi = -Math.PI / 2;
+      const p0 = -Math.PI / 2;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.lineWidth = ringWidth;
-      ctx.strokeStyle = primaryColor;
+      ctx.lineWidth = lw;
+      ctx.strokeStyle = col;
 
       ctx.setLineDash([0.1, 7.5]);
       ctx.globalAlpha = 0.35;
       ctx.beginPath();
-      const restFrom = Math.round(progress * STEPS);
-      for (let s = restFrom; s <= STEPS; s++) {
-        const [x, y] = ringPoint(startPhi + (Math.PI * 2 * s) / STEPS, 0);
-        if (s === restFrom) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      const sFrom = Math.round(prog * N);
+      for (let s = sFrom; s <= N; s++) {
+        const [x, y] = ringPt(p0 + (Math.PI * 2 * s) / N, 0);
+        if (s === sFrom) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
 
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
-      if (progress > 0) {
+      if (prog > 0) {
         ctx.beginPath();
-        const playedSteps = Math.max(2, Math.round(progress * STEPS));
-        for (let s = 0; s <= playedSteps; s++) {
-          const phi = startPhi + (Math.PI * 2 * s) / STEPS;
-          const waveVal = playbackActive ? Math.sin(phi * 24 + m3State.phase) * 1.8 : 0;
-          const [x, y] = ringPoint(phi, waveVal);
-          if (s === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+        const pSteps = Math.max(2, Math.round(prog * N));
+        for (let s = 0; s <= pSteps; s++) {
+          const phi = p0 + (Math.PI * 2 * s) / N;
+          const wv = isPlaying ? Math.sin(phi * 24 + st.phase) * 1.8 : 0;
+          const [x, y] = ringPt(phi, wv);
+          if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
       }
 
-      requestAnimationFrame(renderM3Cover);
+      requestAnimationFrame(drawLoop);
     }
 
-    requestAnimationFrame(renderM3Cover);
+    requestAnimationFrame(drawLoop);
 
-    let playbackActive = false;
-    let isSeeking = false;
-    let youtubePlayerInstance = null;
-    let usingYoutubeBackend = false;
-    let youtubeReady = false;
+    let isPlaying = false;
+    let dragging = false;
+    let ytPlayer = null;
+    let useYt = false;
+    let ytReady = false;
 
-    function extractVideoId(rawUrl) {
-      if (!rawUrl) return '';
-      const match = rawUrl.match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/|^)([a-zA-Z0-9_-]{11})/);
-      return match ? match[1] : '';
+    function getYtId(u) {
+      if (!u) return '';
+      const m = u.match(/(?:v=|\/embed\/|\/watch\/|youtu\.be\/|\/v\/|^)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : '';
     }
 
-    const possibleVideoId = extractVideoId(payload.mediaUrl);
+    const ytId = getYtId(info.mediaUrl);
 
-    window.onYouTubeIframeAPIReady = function() {
-      if (!possibleVideoId) return;
-      youtubePlayerInstance = new YT.Player('youtubePlayerHost', {
+    window.onYouTubeIframeAPIReady = function () {
+      if (!ytId) return;
+      ytPlayer = new YT.Player('youtubePlayerHost', {
         height: '1',
         width: '1',
-        videoId: possibleVideoId,
-        playerVars: {
-          playsinline: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0
-        },
+        videoId: ytId,
+        playerVars: { playsinline: 1, controls: 0, disablekb: 1, fs: 0 },
         events: {
-          onReady: () => {
-            youtubeReady = true;
-          },
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              setButtonState(true);
-              const dur = youtubePlayerInstance.getDuration();
-              if (dur > 0) {
-                seekSlider.max = Math.round(dur);
-                totalDurationText.textContent = formatTime(dur);
+          onReady: () => { ytReady = true; },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              setBtn(true);
+              const d = ytPlayer.getDuration();
+              if (d > 0) {
+                seekSlider.max = Math.round(d);
+                durTimeEl.textContent = fmtTime(d);
               }
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-              setButtonState(false);
+            } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+              setBtn(false);
             }
           }
         }
       });
     };
 
-    function setButtonState(playing) {
-      playbackActive = playing;
-      btnPlay.classList.toggle('playing', playing);
-      playIcon.style.display = playing ? 'none' : 'block';
-      pauseIcon.style.display = playing ? 'block' : 'none';
+    function setBtn(on) {
+      isPlaying = on;
+      btnPlay.classList.toggle('playing', on);
+      playIcon.style.display = on ? 'none' : 'block';
+      pauseIcon.style.display = on ? 'block' : 'none';
     }
 
-    function togglePlayback() {
-      if (playbackActive) {
-        pausePlayback();
+    function goYt() {
+      if (ytPlayer && ytReady) {
+        useYt = true;
+        ytPlayer.playVideo();
+      } else if (ytId) {
+        setTimeout(startPlay, 300);
+      }
+    }
+
+    function startPlay() {
+      if (info.streamUrl) {
+        useYt = false;
+        if (!audio.src) audio.src = info.streamUrl;
+        audio.play().then(() => setBtn(true)).catch(() => goYt());
       } else {
-        startPlayback();
+        goYt();
       }
     }
 
-    function startPlayback() {
-      if (payload.streamUrl) {
-        usingYoutubeBackend = false;
-        if (!nativeAudio.src) {
-          nativeAudio.src = payload.streamUrl;
-        }
-        nativeAudio.play().then(() => {
-          setButtonState(true);
-        }).catch(() => {
-          fallbackToYoutube();
-        });
-      } else {
-        fallbackToYoutube();
-      }
+    function stopPlay() {
+      if (useYt && ytPlayer) ytPlayer.pauseVideo();
+      else audio.pause();
+      setBtn(false);
     }
 
-    function fallbackToYoutube() {
-      if (youtubePlayerInstance && youtubeReady) {
-        usingYoutubeBackend = true;
-        youtubePlayerInstance.playVideo();
-      } else if (possibleVideoId) {
-        setTimeout(startPlayback, 300);
-      }
-    }
-
-    function pausePlayback() {
-      if (usingYoutubeBackend && youtubePlayerInstance) {
-        youtubePlayerInstance.pauseVideo();
-      } else {
-        nativeAudio.pause();
-      }
-      setButtonState(false);
+    function togglePlay() {
+      if (isPlaying) stopPlay();
+      else startPlay();
     }
 
     btnPlay.addEventListener('click', (e) => {
       e.stopPropagation();
-      togglePlayback();
+      togglePlay();
     });
 
-    nativeAudio.addEventListener('timeupdate', () => {
-      if (isSeeking || usingYoutubeBackend) return;
-      const cur = nativeAudio.currentTime;
-      const dur = nativeAudio.duration;
-      currentTimeText.textContent = formatTime(cur);
-      if (dur > 0) {
-        seekSlider.value = Math.round(cur);
-        seekSlider.max = Math.round(dur);
-        totalDurationText.textContent = formatTime(dur);
+    audio.addEventListener('timeupdate', () => {
+      if (dragging || useYt) return;
+      const c = audio.currentTime;
+      const d = audio.duration;
+      curTimeEl.textContent = fmtTime(c);
+      if (d > 0) {
+        seekSlider.value = Math.round(c);
+        seekSlider.max = Math.round(d);
+        durTimeEl.textContent = fmtTime(d);
       }
-      updateSliderVisuals(seekSlider, seekSlWrap);
+      updBar(seekSlider, seekWrap);
     });
 
-    nativeAudio.addEventListener('ended', () => setButtonState(false));
+    audio.addEventListener('ended', () => setBtn(false));
 
     setInterval(() => {
-      if (!playbackActive || !usingYoutubeBackend || !youtubePlayerInstance || isSeeking) return;
+      if (!isPlaying || !useYt || !ytPlayer || dragging) return;
       try {
-        const cur = youtubePlayerInstance.getCurrentTime();
-        const dur = youtubePlayerInstance.getDuration();
-        currentTimeText.textContent = formatTime(cur);
-        if (dur > 0) {
-          seekSlider.value = Math.round(cur);
-          seekSlider.max = Math.round(dur);
-          totalDurationText.textContent = formatTime(dur);
+        const c = ytPlayer.getCurrentTime();
+        const d = ytPlayer.getDuration();
+        curTimeEl.textContent = fmtTime(c);
+        if (d > 0) {
+          seekSlider.value = Math.round(c);
+          seekSlider.max = Math.round(d);
+          durTimeEl.textContent = fmtTime(d);
         }
-        updateSliderVisuals(seekSlider, seekSlWrap);
+        updBar(seekSlider, seekWrap);
       } catch {}
     }, 350);
 
     seekSlider.addEventListener('input', () => {
-      isSeeking = true;
-      currentTimeText.textContent = formatTime(parseFloat(seekSlider.value));
-      updateSliderVisuals(seekSlider, seekSlWrap);
+      dragging = true;
+      curTimeEl.textContent = fmtTime(parseFloat(seekSlider.value));
+      updBar(seekSlider, seekWrap);
     });
 
     seekSlider.addEventListener('change', () => {
-      const targetTime = parseFloat(seekSlider.value);
-      if (usingYoutubeBackend && youtubePlayerInstance) {
-        youtubePlayerInstance.seekTo(targetTime, true);
-      } else {
-        nativeAudio.currentTime = targetTime;
-      }
-      isSeeking = false;
-      updateSliderVisuals(seekSlider, seekSlWrap);
+      const t = parseFloat(seekSlider.value);
+      if (useYt && ytPlayer) ytPlayer.seekTo(t, true);
+      else audio.currentTime = t;
+      dragging = false;
+      updBar(seekSlider, seekWrap);
     });
 
-    volumeSlider.addEventListener('input', () => {
-      const vol = parseFloat(volumeSlider.value);
-      nativeAudio.volume = vol;
-      if (youtubePlayerInstance && youtubePlayerInstance.setVolume) {
-        youtubePlayerInstance.setVolume(Math.round(vol * 100));
-      }
-      updateSliderVisuals(volumeSlider, volSlWrap);
+    volSlider.addEventListener('input', () => {
+      const v = parseFloat(volSlider.value);
+      audio.volume = v;
+      if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(Math.round(v * 100));
+      updBar(volSlider, volWrap);
     });
 
-    let previousVolume = 0.9;
+    let lastVol = 0.9;
     btnMute.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (volumeSlider.value > 0) {
-        previousVolume = volumeSlider.value;
-        volumeSlider.value = 0;
+      if (volSlider.value > 0) {
+        lastVol = volSlider.value;
+        volSlider.value = 0;
       } else {
-        volumeSlider.value = previousVolume;
+        volSlider.value = lastVol;
       }
-      volumeSlider.dispatchEvent(new Event('input'));
+      volSlider.dispatchEvent(new Event('input'));
     });
 
-    btnCopyLink.addEventListener('click', (e) => {
+    btnCopy.addEventListener('click', (e) => {
       e.stopPropagation();
       navigator.clipboard.writeText(window.location.href).then(() => {
-        const origTitle = titleElement.textContent;
-        titleElement.textContent = 'Link copied!';
-        setTimeout(() => { titleElement.textContent = origTitle; }, 1200);
+        const old = titleEl.textContent;
+        titleEl.textContent = 'Link copied!';
+        setTimeout(() => { titleEl.textContent = old; }, 1200);
       });
     });
   </script>
