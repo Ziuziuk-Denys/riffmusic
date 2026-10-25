@@ -1,0 +1,65 @@
+.stack {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.brands {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.url {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  overflow: hidden;
+  border-radius: 980px;
+  background: var(--chip);
+  color: var(--muted);
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.typed {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caret {
+  width: 1.5px;
+  height: 1.1em;
+  margin-left: -6px;
+  background: var(--blue);
+  animation: blink 1s steps(1) infinite;
+}
+
+.check {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  flex: none;
+  color: var(--link);
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.25s,
+    scale 0.4s var(--ease-expo);
+}
+
+.done .check {
+  opacity: 1;
+  scale: 1;
+}
+
+.done .caret {
+  display: none;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

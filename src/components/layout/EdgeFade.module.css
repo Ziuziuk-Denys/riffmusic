@@ -1,0 +1,51 @@
+.edge {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.top {
+  top: 0;
+  height: 120px;
+  --dir: to bottom;
+}
+
+.bottom {
+  bottom: 0;
+  height: 110px;
+  --dir: to top;
+}
+
+.edge i {
+  position: absolute;
+  inset: 0;
+}
+
+.edge i:nth-child(1) {
+  backdrop-filter: blur(1px);
+  mask-image: linear-gradient(var(--dir), #000 0, transparent 100%);
+}
+
+.edge i:nth-child(2) {
+  backdrop-filter: blur(3px);
+  mask-image: linear-gradient(var(--dir), #000 0, #000 18%, transparent 68%);
+}
+
+.edge i:nth-child(3) {
+  backdrop-filter: blur(8px);
+  mask-image: linear-gradient(var(--dir), #000 0, #000 8%, transparent 42%);
+}
+
+.edge i:nth-child(4) {
+  background: linear-gradient(
+    var(--dir),
+    rgba(var(--fade), 0.9) 0,
+    rgba(var(--fade), 0.72) 18%,
+    rgba(var(--fade), 0.42) 40%,
+    rgba(var(--fade), 0.16) 65%,
+    rgba(var(--fade), 0.04) 85%,
+    rgba(var(--fade), 0) 100%
+  );
+}

@@ -1,0 +1,12 @@
+.brands {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 420px) {
+  .brands {
+    font-size: 15px;
+  }
+}

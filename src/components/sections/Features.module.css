@@ -1,0 +1,30 @@
+.features {
+  padding: 120px max(var(--gutter), (100% - var(--max)) / 2);
+  background: var(--surface);
+}
+
+.inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.title {
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .features {
+    padding: 72px 22px;
+  }
+
+  .title {
+    margin-bottom: 36px;
+  }
+}

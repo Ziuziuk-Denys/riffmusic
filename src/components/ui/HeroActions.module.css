@@ -1,0 +1,23 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 22px;
+  margin-top: 28px;
+  animation: rise 1s var(--ease-out) 0.45s both;
+}
+
+.note {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.43;
+  letter-spacing: -0.016em;
+  animation: rise 1s var(--ease-out) 0.6s both;
+}
+
+@media (max-width: 900px) {
+  .actions {
+    justify-content: center;
+  }
+}

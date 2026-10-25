@@ -1,0 +1,145 @@
+.download {
+  padding: 120px max(var(--gutter), (100% - var(--max)) / 2);
+  background: var(--bg);
+  text-align: center;
+}
+
+.inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.lead {
+  margin-inline: auto;
+}
+
+.shot {
+  max-width: 900px;
+  margin: 48px auto 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  mask-image:
+    linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%),
+    linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: -24px;
+  text-align: left;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 36px 32px;
+  border-radius: 28px;
+  background: var(--surface);
+}
+
+.icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+
+.icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.name {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.17;
+  font-weight: 500;
+  letter-spacing: -0.014em;
+}
+
+.requirement {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: -0.016em;
+}
+
+.body {
+  flex: 1;
+  margin: 20px 0 28px;
+  font-size: 19px;
+  text-wrap: pretty;
+}
+
+.alt {
+  display: block;
+  margin-top: 14px;
+  font-size: 17px;
+  text-align: center;
+}
+
+.code {
+  position: relative;
+  max-width: 980px;
+  margin: 20px auto 0;
+  padding: 24px 28px;
+  border-radius: 18px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.code small {
+  display: block;
+  margin-bottom: 6px;
+  padding-right: 120px;
+  color: var(--muted);
+  font-family: var(--sf);
+  font-size: 14px;
+  letter-spacing: -0.016em;
+}
+
+.code pre {
+  margin: 0;
+  overflow-x: auto;
+  font: inherit;
+  user-select: all;
+}
+
+.copy {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  color: var(--link);
+  font-family: var(--sf);
+  font-size: 14px;
+}
+
+.copy:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .download {
+    padding: 72px 22px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
